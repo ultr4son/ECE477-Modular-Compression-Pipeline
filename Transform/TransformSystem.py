@@ -3,20 +3,18 @@ Defines system for running transformations.
 Primary interface is the function runTransformations.
 """
 from pymonad import State, unit, curry
-import numpy as np
 import copy
 from Transform.TransformState import State as TState
-import Transform.Transforms as Transforms
 
-def runTransformations(transforms, initialState):
+def runTransformations(transforms, initialValue):
     """
     Call this function with the user's selected transforms.
     transforms: a list of functions that take an input value of type State and return an output value of type State. Expects that State.value is of the appropriate type for each function.
-    initialState: the initial State value.
+    initialValue: the initial value
     returns: (State, [State]), as in (The result of the final operation, [The result of each operation in series])
     """
 
-    system = TransformSystem(initialState)
+    system = TransformSystem(TState(initialValue))
 
     system.addTransforms(transforms)
 
@@ -76,20 +74,3 @@ class TransformSystem:
         return self.__transform([])
 
 
-if __name__ == "__main__":
-    initialState = TState(np.array([
-        [1,1,1],
-        [1,0,1],
-        [1,0,0]
-    ]))
-
-    system = TransformSystem(initialState)
-
-    system.addTransforms([Transforms.imageToBytes, Transforms.imageBytesToImage])
-
-    result = system.runSystem()
-
-    print(result[0].value)
-
-    #Extract value from state
-    print(list(map(lambda r: r.value, result[1])))
