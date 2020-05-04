@@ -8,9 +8,10 @@ class ThompsonImageCompression:
     This is a cool new compression algorithm made by me
     """
 
-    def __init__(self, divideBy = 1):
+    def __init__(self, divideBy = 1, axis = 0):
         #An extra parameter that will be given to the class when instantiated
         self.divideBy = divideBy
+        self.axis = axis
 
     #This is what the transformation the class will do to the state value.
     #Keep this function the same name and format across all transformation classes so the system knows what to call!
@@ -29,7 +30,7 @@ class ThompsonImageCompression:
             keep.append(i % self.divideBy == 0)
 
         #Remove rows that are false in keep
-        value = np.compress(keep, value, axis=0)
+        value = np.compress(keep, value, axis=self.axis)
 
         #Get final size for statistics
         finalSizeBytes = value.size * value.itemsize
@@ -49,7 +50,7 @@ if __name__ == "__main__":
     #Get test image
     initialValue = cv.imread("burmese.jpg")
 
-    (final, record) = runTransformations([ThompsonImageCompression(3).transform, ThompsonImageCompression(2).transform], initialValue)
+    (final, record) = runTransformations([ThompsonImageCompression(3, 0).transform, ThompsonImageCompression(2, 1).transform], initialValue)
 
     cv.imshow("Initial", initialValue)
 
