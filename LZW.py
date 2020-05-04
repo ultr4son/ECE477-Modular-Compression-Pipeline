@@ -7,7 +7,7 @@ from TransformState import State
 class LZW:
     def __init__(self,bitsUsed=10):#the number of bits used will represent how many entries are in the dictionary+256 ascii defualt is 10 bits
         self.__bitsUsed = bitsUsed
-    def encode(self,stateOb):
+    def encode(self,stateOb):#encoding
         sizeOfDict = 256
         finalArray=[]
         finalString=""
