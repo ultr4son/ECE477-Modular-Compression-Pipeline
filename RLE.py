@@ -4,8 +4,8 @@ import math
 from TransformState import State
 class RLE:
     def __init__(self, runType,bitsUsed=4):#will change to 0, 1, or 2 0 for literal run, 1 for fill run and 2 for binary run
-        self.__runType = runType#binary RLE needs another input can default to just 4?
-        self.__bitsUsed = bitsUsed
+        self.__runType = runType
+        self.__bitsUsed = bitsUsed#default 4 bits
     def runType1(self):
         return self.__runType
 
