@@ -7,7 +7,7 @@ from TransformState import State
 class LZW:
     def __init__(self,bitsUsed=10):#the number of bits used will represent how many entries are in the dictionary+256 ascii defualt is 10 bits
         self.__bitsUsed = bitsUsed
-    def encode(self,stateOb):#encoding
+    def encode(self,stateOb):
         sizeOfDict = 256
         finalArray=[]
         finalString=""
@@ -33,7 +33,7 @@ class LZW:
         for i in range(0,len(finalArray)):
             finalString=finalString+'{0:0{j}b}'.format(int(finalArray[i]),j=self.__bitsUsed)#convert everything to binary
             #finalString=finalString+'{0:08b}'.format(int(finalArray[i]))
-        stateOb.statistics = ["Initial Size(Bytes): " + str(length), "Final Size(Bytes): " + str(len(finalString)/8),"Initial String: "+str(stateOb.getValue()),"Encoded String: "+str(''.join(map(str,finalArray)))]
+        stateOb.statistics = ["Initial Size(Bytes): " + str(length), "Final Size(Bytes): " + str(len(finalString)/8),"Initial String: "+str(stateOb.getValue()),"Encoded String: "+str(','.join(map(str,finalArray))),"Bits Used: "+str(self.__bitsUsed)]
         stateOb.setValue(finalString)
         #print(finalArray)
         return stateOb
