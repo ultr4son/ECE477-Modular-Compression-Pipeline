@@ -3,9 +3,9 @@ import numpy as np
 import math
 from TransformState import State
 class RLE:
-    def __init__(self, runType,bitsUsed=4):#will change to 0, 1, or 2 0 for literal run, 1 for fill run and 2 for binary run
-        self.__runType = runType
-        self.__bitsUsed = bitsUsed#default 4 bits
+    def __init__(self, runType,bitsUsed=5):#will change to 0, 1, or 2 0 for literal run, 1 for fill run and 2 for binary run
+        self.__runType = runType#binary RLE needs another input can default to just 4?
+        self.__bitsUsed = bitsUsed
     def runType1(self):
         return self.__runType
 
@@ -93,6 +93,7 @@ class RLE:
             i=0
             n = 0
             finalArray=""
+            initialBString=stateOb.getValue()
             #holderArray=""
             decimal = (2**self.__bitsUsed)-1
             checkIfDecimals=0
@@ -124,10 +125,18 @@ class RLE:
                         countZs = 0
                     #while stateOb.value1()[i+1] == '1'
                     #    i=i+1
-
                 i=i+1
+            binaryHolder=""
+            readableString=""
+            i=0
+            while i < len(finalArray):
+                binaryHolder=binaryHolder+finalArray[i]
+                i+=1
+                if len(binaryHolder) == self.__bitsUsed:
+                    readableString=readableString+str(int(binaryHolder,2))+","
+                    binaryHolder=""
             stateOb.setValue(finalArray)
-            stateOb.statistics = ["Initial Size(Bytes): " + str(lengthInitial/8), "Final Size(Bytes): " + str(len(finalArray)/8)]
+            stateOb.statistics = ["Initial Size(Bytes): " + str(lengthInitial/8), "Final Size(Bytes): " + str(len(finalArray)/8),"Initial Binary String: "+str(initialBString),"Encoded String: "+str(readableString),"Bits Used: "+str(self.__bitsUsed)]
             #stateOb.info(len(finalArray)/8)
             return stateOb
 
@@ -203,6 +212,7 @@ class RLE:
             i=0
             hold=0
             checkIfOne = 1
+            initialBString=stateOb.getValue()
             while hold < (len(stateOb.getValue())-1):
                 arrayHold=""
                 for i in range(hold,hold+self.__bitsUsed):
@@ -224,15 +234,15 @@ class RLE:
                         finalArray=finalArray+"1"
 
             stateOb.setValue(finalArray)
-            stateOb.statistics = ["Initial Size(Bytes): " + str(lengthInitial/8), "Final Size(Bytes): " + str(len(finalArray)/8)]
+            stateOb.statistics = ["Initial Size(Bytes): " + str(lengthInitial/8), "Final Size(Bytes): " + str(len(finalArray)/8),"Initial Binary String: "+str(initialBString)]
             #stateOb.info(len(finalArray)/8)
             return stateOb
 
 #main
-r = RLE(1)
-s = State("qwAAAAAAAAAAAABBBBEEEJKAAAAA")
+r = RLE(2)
+#s = State("qwAAAAAAAAAAAABBBBEEEJKAAAAA")
 #s = State("1000100001")
-#s = State("10000000000000010000000001110000000000000000000010000000000000000000000000000001100000000000")
+s = State("10000000000000010000000001110000000000000000000010000000000000000000000000000001100000000000")
 
 print("\nThis is where encoding starts\n")
 encodedVal= r.encode(s)
