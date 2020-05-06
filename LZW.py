@@ -1,4 +1,3 @@
-#build a list from the start so if its "no means no" the dictionary becomes ["no","o"," ","m","e"it becomes [0,1,]
 import string
 import sys
 import numpy as np
