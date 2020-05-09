@@ -23,5 +23,7 @@ class State:
     '''
         Statistics from previous operation
     '''
-    messages: list
+    statistics: list
+
+    name:str
 
