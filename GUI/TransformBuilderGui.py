@@ -1,10 +1,17 @@
 import tkinter as tk
+import tkinter.filedialog as filedialog
+import cv2 as cv
 from GUI.Common import *
-import decimal
+from Transform.TransformSystem import runTransformations
+
 
 CONTROL_ROW = 0
 TRANSFORM_ROW = 1
 
+RUN_BUTTON_COLUMN = 0
+IMPORT_IMAGE_COLUMN = 1
+IMPORT_TEXT_COLUMN = 2
+ADD_COLUMN = 3
 
 class BuilderWindow(tk.Frame):
     def __init__(self, master = None):
@@ -12,21 +19,40 @@ class BuilderWindow(tk.Frame):
         self.master = master
         self.grid()
         self.transforms = []
-
+        self.initialValue = None
+        self.initialType = None
         self.create_widgets()
 
+    def insertTransform(self, position, name, inType, outType, transformFunction):
+        transformWidget = TransformWidget(self, name = name, inType = inType, outType = outType, transform = transformFunction)
+        insertBeforeFrame = tk.Frame(self)
+
+        insertBeforeFrame.bind("<Button-1>", )
+        transformWidget.grid(column = position + 1, row=TRANSFORM_ROW)
+        self.transforms.append(transformWidget)
+
     def create_widgets(self):
-        for i in range(0, 5):
-            transformWidget = TransformWidget(self, name="Test " + str(i), inType=TYPE_BYTES, outType=TYPE_BYTES)
-            transformWidget.grid(column = i, row = TRANSFORM_ROW)
-            self.transforms.append(transformWidget)
+        self.runButton = tk.Button(self, text = "Run", command = self.handleRun)
+        self.runButton.grid(row = CONTROL_ROW, column = RUN_BUTTON_COLUMN)
+        self.runButton["state"] = "disabled"
+
+        self.importImageButton = tk.Button(self, text = "Import Bitmap", command = self.handleImportImage)
+        self.importImageButton.grid(row = CONTROL_ROW, column = IMPORT_IMAGE_COLUMN)
+
+        self.importTextButton = tk.Button(self, text = "Import Text", command = self.handleImportText)
+        self.importTextButton.grid(row = CONTROL_ROW, column = IMPORT_TEXT_COLUMN)
+
+        self.addTransformButton = tk.Button(self, text = "Add Selected Transform", command = self.handleAddTransform)
+        self.addTransformButton.grid(row = CONTROL_ROW, column = ADD_COLUMN)
+
+
+
 
     def dnd_accept(self, target ,event):
         return self
     def dnd_motion(self, source, event):
         pass
     def dnd_enter(self, target, event):
-
         pass
     def dnd_commit(self, source: TransformWidget, event):
 
@@ -42,8 +68,7 @@ class BuilderWindow(tk.Frame):
         source.grid(column = targetIndex, row = TRANSFORM_ROW)
         target.grid(column = sourceIndex, row = TRANSFORM_ROW)
 
-
-        self.transforms[sourceIndex], self.transforms[targetIndex]= target, source
+        self.transforms[sourceIndex], self.transforms[targetIndex] = target, source
 
     def dnd_leave(self, source, event):
         pass
@@ -51,6 +76,26 @@ class BuilderWindow(tk.Frame):
         while not isinstance(source, TransformWidget):
             source = source.master
         return source
+
+    def handleImportImage(self):
+        fileName = filedialog.askopenfilename(title = "Select a bitmap file", filetypes = [("JPEG", "*.jpg"), ("Bitmap", "*.bmp")])
+        self.initialValue = cv.imread(fileName)
+        self.initialType = TYPE_BITMAP
+        self.runButton["state"] = "normal"
+
+    def handleImportText(self):
+        file = filedialog.askopenfile(title = "Select a text file", mode="r", filetypes = [("Text", "*.txt"), ("All", "*.*")])
+        self.initialValue = file.read()
+        self.initialType = TYPE_BYTES
+        self.runButton["state"] = "normal"
+
+    def handleRun(self):
+        if self.initialValue is not None:
+            (_, states) = runTransformations([widget.transform for widget in self.transforms], self.initialValue)
+            #TODO: put call to output window here
+    def handleAddTransform(self):
+        #TODO: put call to transform window here
+        pass
 
 if __name__ == '__main__':
     root = tk.Tk()
