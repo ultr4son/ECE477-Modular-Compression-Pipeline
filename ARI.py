@@ -144,10 +144,10 @@ class ARI:
 
 
 
-
-#Testing
-a = ARI(1)
-#s = State("AABCAACC")
-s = State("MMMMFFVVVF")
-#s = State("ABC")
-a.encode(s)
+if __name__ == "__main__":
+	#Testing
+	a = ARI(1)
+	#s = State("AABCAACC")
+	s = State("MMMMFFVVVF")
+	#s = State("ABC")
+	a.encode(s)

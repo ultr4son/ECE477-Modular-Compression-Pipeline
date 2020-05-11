@@ -3,7 +3,8 @@ import tkinter.filedialog as filedialog
 import cv2 as cv
 from GUI.Common import *
 from Transform.TransformSystem import runTransformations
-
+from GUI.outputview import *
+import Transform.TransformExample
 
 CONTROL_ROW = 0
 TRANSFORM_ROW = 1
@@ -22,28 +23,42 @@ class BuilderWindow(tk.Frame):
         self.initialValue = None
         self.initialType = None
         self.create_widgets()
+    def insertAt(self, position):
+        def handler(self):
+            #TODO: call resolver
+            self.insertTransform(position + 1, )
+            pass
+        return handler
 
-    def insertTransform(self, position, name, inType, outType, transformFunction):
-        transformWidget = TransformWidget(self, name = name, inType = inType, outType = outType, transform = transformFunction)
-        insertBeforeFrame = tk.Frame(self)
 
-        insertBeforeFrame.bind("<Button-1>", )
-        transformWidget.grid(column = position + 1, row=TRANSFORM_ROW)
-        self.transforms.append(transformWidget)
+    def insertTransform(self, transformPosition, name, inType, outType, transformFunction):
+        widget = TransformWidget(self, name, inType, outType, transformFunction)
+        widget.insertBeforeButton.command = self.insertAt(transformPosition - 1)
+        widget.insertAfterButton.command = self.insertAt(transformPosition + 1)
+        widget.grid(row = TRANSFORM_ROW, column = transformPosition - 1)
+        self.transforms.insert(transformPosition - 1, widget)
+
 
     def create_widgets(self):
         self.runButton = tk.Button(self, text = "Run", command = self.handleRun)
         self.runButton.grid(row = CONTROL_ROW, column = RUN_BUTTON_COLUMN)
-        self.runButton["state"] = "disabled"
 
-        self.importImageButton = tk.Button(self, text = "Import Bitmap", command = self.handleImportImage)
-        self.importImageButton.grid(row = CONTROL_ROW, column = IMPORT_IMAGE_COLUMN)
+        #TODO: testing code remove later
+        transformFunction1 = Transform.TransformExample.ThompsonImageCompression(2).transform
+        transformFunction2 = Transform.TransformExample.ThompsonImageCompression(2, 1).transform
+        self.insertTransform(1, "Test", "bitmap", "bitmap", transformFunction1)
+        self.insertTransform(2, "Test2", "bitmap", "bitmap", transformFunction2)
+        self.initialValue = cv.imread("../Transform/burmese.jpg")
+        #
 
-        self.importTextButton = tk.Button(self, text = "Import Text", command = self.handleImportText)
-        self.importTextButton.grid(row = CONTROL_ROW, column = IMPORT_TEXT_COLUMN)
+        # self.importImageButton = tk.Button(self, text = "Import Bitmap", command = self.handleImportImage)
+        # self.importImageButton.grid(row = CONTROL_ROW, column = IMPORT_IMAGE_COLUMN)
+        #
+        # self.importTextButton = tk.Button(self, text = "Import Text", command = self.handleImportText)
+        # self.importTextButton.grid(row = CONTROL_ROW, column = IMPORT_TEXT_COLUMN)
 
-        self.addTransformButton = tk.Button(self, text = "Add Selected Transform", command = self.handleAddTransform)
-        self.addTransformButton.grid(row = CONTROL_ROW, column = ADD_COLUMN)
+        # self.addTransformButton = tk.Button(self, text = "Add Selected Transform", command = self.handleAddTransform)
+        # self.addTransformButton.grid(row = CONTROL_ROW, column = ADD_COLUMN)
 
 
 
@@ -77,25 +92,28 @@ class BuilderWindow(tk.Frame):
             source = source.master
         return source
 
-    def handleImportImage(self):
-        fileName = filedialog.askopenfilename(title = "Select a bitmap file", filetypes = [("JPEG", "*.jpg"), ("Bitmap", "*.bmp")])
-        self.initialValue = cv.imread(fileName)
-        self.initialType = TYPE_BITMAP
-        self.runButton["state"] = "normal"
-
-    def handleImportText(self):
-        file = filedialog.askopenfile(title = "Select a text file", mode="r", filetypes = [("Text", "*.txt"), ("All", "*.*")])
-        self.initialValue = file.read()
-        self.initialType = TYPE_BYTES
-        self.runButton["state"] = "normal"
+    # def handleImportImage(self):
+    #     fileName = filedialog.askopenfilename(title = "Select a bitmap file", filetypes = [("JPEG", "*.jpg"), ("Bitmap", "*.bmp")])
+    #     self.initialValue = cv.imread(fileName)
+    #     self.initialType = TYPE_BITMAP
+    #     self.runButton["state"] = "normal"
+    #
+    # def handleImportText(self):
+    #     file = filedialog.askopenfile(title = "Select a text file", mode="r", filetypes = [("Text", "*.txt"), ("All", "*.*")])
+    #     self.initialValue = file.read()
+    #     self.initialType = TYPE_BYTES
+    #     self.runButton["state"] = "normal"
 
     def handleRun(self):
         if self.initialValue is not None:
             (_, states) = runTransformations([widget.transform for widget in self.transforms], self.initialValue)
-            #TODO: put call to output window here
-    def handleAddTransform(self):
-        #TODO: put call to transform window here
-        pass
+            newWindow = tk.Toplevel(self.master)
+            outputWindow = Window(newWindow)
+            outputWindow.outputFunc(states)
+        
+    # def handleAddTransform(self):
+    #     #TODO: put call to transform window here
+    #     pass
 
 if __name__ == '__main__':
     root = tk.Tk()

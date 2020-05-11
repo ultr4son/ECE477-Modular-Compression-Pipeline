@@ -56,10 +56,11 @@ class Color_Space:
         #cv2.imwrite('YUV.jpg', yuv)
         cv2.waitKey()
         return
+if __name__ == "__main__":
 
-##test
-img = cv2.imread('test.png')
-image = Color_Space(img)
-image.Gray()
-image.RGB()
-image.YUV()
+    ##test
+    img = cv2.imread('test.png')
+    image = Color_Space(img)
+    image.Gray()
+    image.RGB()
+    image.YUV()

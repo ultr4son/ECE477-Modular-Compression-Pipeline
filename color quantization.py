@@ -43,15 +43,16 @@ class Color_Quantizaion:
         cv2.destroyAllWindows()
         return
 
-##test
-img = Image.open('LenaBaboon.jpg')
-image = Color_Quantizaion(img)
-image.random_quantization()
+if __name__ == "__main__":
+    ##test
+    img = Image.open('LenaBaboon.jpg')
+    image = Color_Quantizaion(img)
+    image.random_quantization()
 
-img = cv2.imread('LenaBaboon.jpg')
-cv2.imshow('Original    774KB',img)
-image = Color_Quantizaion(img)
-image.kmeans_quantization()
+    img = cv2.imread('LenaBaboon.jpg')
+    cv2.imshow('Original    774KB',img)
+    image = Color_Quantizaion(img)
+    image.kmeans_quantization()
 
 
 

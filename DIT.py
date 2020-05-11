@@ -82,15 +82,15 @@ class Dither:
 
 
 
-
-# Testing
-img = cv2.imread('aa_cat.jpg')	#Input into this block
-x = Dither(img)	#Creates an instance of the class Dither and assigns it to x
-print("Size of input file (in Bytes): ", x.getSize())
-print("Shape of input file (rows, columns, dimensions per pixel): ",x.getShape())
-#Dither image according to a factorable input
-#and output to file name
-x.ditherRGBimage(64, "dither_image985.jpg")
-#New pixel value range
-print("Value range of pixels of new image: 0 to", x.pixelVal)
+if __name__ == "__main__":
+	# Testing
+	img = cv2.imread('aa_cat.jpg')	#Input into this block
+	x = Dither(img)	#Creates an instance of the class Dither and assigns it to x
+	print("Size of input file (in Bytes): ", x.getSize())
+	print("Shape of input file (rows, columns, dimensions per pixel): ",x.getShape())
+	#Dither image according to a factorable input
+	#and output to file name
+	x.ditherRGBimage(64, "dither_image985.jpg")
+	#New pixel value range
+	print("Value range of pixels of new image: 0 to", x.pixelVal)
 

@@ -2,7 +2,7 @@ import string
 import sys
 import numpy as np
 import math
-from TransformState import State
+from Transform.TransformState import State
 class LZW:
     def __init__(self,bitsUsed=10):#the number of bits used will represent how many entries are in the dictionary+256 ascii defualt is 10 bits
         self.__bitsUsed = bitsUsed
@@ -74,16 +74,17 @@ class LZW:
         return stateOb
 
 
+if __name__ == "__main__":
 
-l = LZW()
-s = State("^WED^WE^WEE^WEB^WET")
-print("\nThis is where encoding starts\n")
-encodedVal= l.encode(s)
-print("encoded code: ",encodedVal.getValue())#somehow get the class state
-for stat in encodedVal.statistics:
-    print(stat)
-print("\nThis is where decoding starts\n")
-decodedVal= l.decode(encodedVal)
-print("decoded code: ",decodedVal.getValue())#somehow get the class state
-for stat in decodedVal.statistics:
-    print(stat)
+    l = LZW()
+    s = State("^WED^WE^WEE^WEB^WET")
+    print("\nThis is where encoding starts\n")
+    encodedVal= l.encode(s)
+    print("encoded code: ",encodedVal.getValue())#somehow get the class state
+    for stat in encodedVal.statistics:
+        print(stat)
+    print("\nThis is where decoding starts\n")
+    decodedVal= l.decode(encodedVal)
+    print("decoded code: ",decodedVal.getValue())#somehow get the class state
+    for stat in decodedVal.statistics:
+        print(stat)

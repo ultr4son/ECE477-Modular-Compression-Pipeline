@@ -41,7 +41,7 @@ class ThompsonImageCompression:
         #Add statistics
         #Statistics list should only contain values from this transformation (Don't use append(), make a new list)
         state.statistics = ["Initial Size: " + str(initialSizeBytes), "Final Size: " + str(finalSizeBytes)]
-
+        state.name = "Thompson Image Compression"
         return state
 
 #Main

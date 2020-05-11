@@ -1,7 +1,7 @@
 import sys
 import numpy as np
 import math
-from TransformState import State
+from Transform.TransformState import State
 class RLE:
     def __init__(self, runType,bitsUsed=5):#will change to 0, 1, or 2 0 for literal run, 1 for fill run and 2 for binary run
         self.__runType = runType#binary RLE needs another input can default to just 4?
@@ -238,24 +238,25 @@ class RLE:
             #stateOb.info(len(finalArray)/8)
             return stateOb
 
-#main
-r = RLE(2)
-#s = State("qwAAAAAAAAAAAABBBBEEEJKAAAAA")
-#s = State("1000100001")
-s = State("10000000000000010000000001110000000000000000000010000000000000000000000000000001100000000000")
+if __name__ == "__main__":
+    #main
+    r = RLE(2)
+    #s = State("qwAAAAAAAAAAAABBBBEEEJKAAAAA")
+    #s = State("1000100001")
+    s = State("10000000000000010000000001110000000000000000000010000000000000000000000000000001100000000000")
 
-print("\nThis is where encoding starts\n")
-encodedVal= r.encode(s)
-#print(r.runType1())
-print("encoded code: ",encodedVal.getValue())#somehow get the class state
-for stat in encodedVal.statistics:
-    print(stat)
-#print("size of encoded code(bytes): ",encodedVal.info1())#somehow get the class state
-decodedVal = r.decode(encodedVal)
-#print(r.runType1())
-print("\nThis is where decoding starts\n")
+    print("\nThis is where encoding starts\n")
+    encodedVal= r.encode(s)
+    #print(r.runType1())
+    print("encoded code: ",encodedVal.getValue())#somehow get the class state
+    for stat in encodedVal.statistics:
+        print(stat)
+    #print("size of encoded code(bytes): ",encodedVal.info1())#somehow get the class state
+    decodedVal = r.decode(encodedVal)
+    #print(r.runType1())
+    print("\nThis is where decoding starts\n")
 
-print("decoded message: ",decodedVal.getValue())#somehow get the class state
-for stat in decodedVal.statistics:
-    print(stat)
-#print("size of decoded message code(bytes): ",decodedVal.info1())#somehow get the class state
+    print("decoded message: ",decodedVal.getValue())#somehow get the class state
+    for stat in decodedVal.statistics:
+        print(stat)
+    #print("size of decoded message code(bytes): ",decodedVal.info1())#somehow get the class state
