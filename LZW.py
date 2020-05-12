@@ -34,6 +34,7 @@ class LZW:
             #finalString=finalString+'{0:08b}'.format(int(finalArray[i]))
         stateOb.statistics = ["Initial Size(Bytes): " + str(length), "Final Size(Bytes): " + str(len(finalString)/8),"Initial String: "+str(stateOb.getValue()),"Encoded String: "+str(','.join(map(str,finalArray))),"Bits Used: "+str(self.__bitsUsed)]
         stateOb.setValue(finalString)
+        stateOb.name="LZW Encode"
         #print(finalArray)
         return stateOb
     def decode(self,stateOb):
@@ -71,6 +72,7 @@ class LZW:
         #print(finalString)
         stateOb.statistics = ["Initial Size(Bytes): " + str(length/8), "Final Size(Bytes): " + str(len(finalString)),"Initial Binary String: "+str(stateOb.getValue())]
         stateOb.setValue(finalString)
+        stateOb.name="LZW Decode"
         return stateOb
 
 
