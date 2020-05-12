@@ -31,7 +31,14 @@ class Window(Frame):
     def outputInfo(self,stateOb,output):
         #split = Tk()
         if self.counter>0:
+            if isinstance(self.picName,str):
+                cv2.destroyWindow(self.picName)
+            for pics in self.picInfo:
+                if isinstance(pics,str):
+                    cv2.destroyWindow(pics)
             self.splitted.destroy()
+
+        self.picInfo=[]
         split=Toplevel(output)
         self.splitted=split
         self.counter+=1
@@ -49,10 +56,12 @@ class Window(Frame):
         split.title(stateOb.name)#if i can get some info about the type of transform
         if isinstance(stateOb.getValue(),str):
             text = Label(split,text=stateOb.getValue())
-            text.pack(fill=BOTH,padx=50)
+            text.pack(fill=BOTH,padx=50,expand=1,side=TOP)
             #print(stateOb.getValue())
         else:
+            self.picName=stateOb.name
             cv2.imshow(stateOb.name,stateOb.getValue())
+            #self.picName="hello"
             #cv2.imshow("hello",stateOb.getValue())
             #print("do Imshow....")
         l=0
@@ -60,8 +69,9 @@ class Window(Frame):
             l+=1
             if isinstance(stat,str):
                 text = Label(split,text=stat)
-                text.pack(fill=BOTH,expand=100)
+                text.pack(fill=BOTH,expand=1,padx=50,side=TOP)
             else:
+                self.picInfo.append('tk'+str(l))
                 cv2.imshow('tk'+str(l),stat)
             #print(stat)
         #split.destroy()
@@ -71,6 +81,8 @@ class Window(Frame):
         self.x=x
         self.y=y
         self.counter=0
+        self.picName=None
+        self.picInfo=None
         self.init_window()
         #self.split=Tk()
 
@@ -82,7 +94,7 @@ class Window(Frame):
         self.pack(fill=BOTH, expand=1)
         #self.master.geometry("")
         self.master.geometry(str(self.x)+"x"+str(self.y))
-
+        
 if __name__ == "__main__":
     output = Tk()
 
