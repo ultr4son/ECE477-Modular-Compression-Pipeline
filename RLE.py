@@ -42,6 +42,7 @@ class RLE:
             #stateOb.setValue(str(length)+stateOb.getValue())
             stateOb.statistics = ["Initial Size(Bytes): " + str(lengthInitial), "Final Size(Bytes): " + str(lengthInitial+1),"Initial String: "+str(stateOb.getValue()),"Encoded String: "+str(str(length)+stateOb.getValue())]
             stateOb.setValue(finalArray)
+            stateOb.name="RLE Encode Literal Run"
             return stateOb
         elif self.__runType == 1:
             count = 129 #msb is a 1 if this if statement is accessed
@@ -86,6 +87,7 @@ class RLE:
             #print (finalArray)
             stateOb.statistics = ["Initial Size(Bytes): " + str(lengthInitial), "Final Size(Bytes): " + str(int(len(finalArray)/8)),"Initial String: "+str(initialArray),"Encoded String: "+str(stateOb.getValue())]
             stateOb.setValue(finalArray)
+            stateOb.name="RLE Encode Fill Run"
             #stateOb.info(length-numberHolder+countNums) #where do we put the information like size? +128 for the 1 in msb, - numberHolder to take away the bytes numbers are holding + to add in the correct bytes numbers are holding
             return stateOb
         else:
@@ -137,7 +139,7 @@ class RLE:
                     binaryHolder=""
             stateOb.setValue(finalArray)
             stateOb.statistics = ["Initial Size(Bytes): " + str(lengthInitial/8), "Final Size(Bytes): " + str(len(finalArray)/8),"Initial Binary String: "+str(initialBString),"Encoded String: "+str(readableString),"Bits Used: "+str(self.__bitsUsed)]
-            #stateOb.info(len(finalArray)/8)
+            stateOb.name="RLE Encode Binary Run"
             return stateOb
 
     def decode(self,stateOb):#need to work on this next
@@ -167,6 +169,7 @@ class RLE:
             #        numberCount=numberCount+1
             stateOb.statistics = ["Initial Size(Bytes): " + str(int(lengthInitial/8)), "Final Size(Bytes): " + str(len(finalArray)),"Initial Binary String: ",stateOb.getValue()]
             stateOb.setValue(finalArray)
+            stateOb.name="RLE Decode Literal Run"
             #stateOb.statistics = ["Initial Size(Bytes): " + str(lengthInitial-numberCount+1), "Final Size(Bytes): " + str(len(finalArray))]
             #stateOb.info(len(finalArray))
             return stateOb
@@ -205,6 +208,7 @@ class RLE:
             #    j=j+jumps+1
             stateOb.statistics = ["Initial Size(Bytes): " + str(int(lengthInitial/8)), "Final Size(Bytes): " + str(len(finalArray)),"Initial Binary String: ",stateOb.getValue()]
             stateOb.setValue(finalArray)
+            stateOb.name="RLE Decode Fill Run"
             #stateOb.statistics = ["Initial Size(Bytes): " + str((lengthInitial-numberCount)*2), "Final Size(Bytes): " + str(len(finalArray))]
             #stateOb.info(len(finalArray))
             return stateOb
@@ -235,6 +239,7 @@ class RLE:
 
             stateOb.setValue(finalArray)
             stateOb.statistics = ["Initial Size(Bytes): " + str(lengthInitial/8), "Final Size(Bytes): " + str(len(finalArray)/8),"Initial Binary String: "+str(initialBString)]
+            stateOb.name="RLE Decode Binary Run"
             #stateOb.info(len(finalArray)/8)
             return stateOb
 
