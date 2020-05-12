@@ -238,6 +238,7 @@ class RLE:
             #stateOb.info(len(finalArray)/8)
             return stateOb
 
+
 if __name__ == "__main__":
     #main
     r = RLE(2)
