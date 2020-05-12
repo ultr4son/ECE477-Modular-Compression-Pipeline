@@ -5,7 +5,7 @@ from Transform.TransformState import State
 from LZW import LZW
 from RLE import RLE
 class Window(Frame):
-    def outputFunc(self,stateObList):
+    def outputFunc(self,stateObList,output):
         i=0
         j=0
         k=0
@@ -13,8 +13,9 @@ class Window(Frame):
         for stateOb in stateObList:
             #print(stateObList[i].getValue())
             #print(stateOb.getValue())
-            viewButton.append(Button(self, text="Transform"+str(i+1),command=lambda stateOb=stateOb:self.outputInfo(stateOb)))#kept it as transform because formatting is a bit easier
+            viewButton.append(Button(self, text="Transform"+str(i+1),command=lambda stateOb=stateOb:self.outputInfo(stateOb,output)))#kept it as transform because formatting is a bit easier
             viewButton[i].place(x=j, y=k)
+            #viewButton[i].pack(fill=BOTH,expand=1)
             i+=1
             j+=100
             if j%self.x == 0:
@@ -27,34 +28,51 @@ class Window(Frame):
         #    j+=100
         #text = Label(self,text=stateOb)
         #text.pack()
-    def outputInfo(self,stateOb):
-        split = Tk()
+    def outputInfo(self,stateOb,output):
+        #split = Tk()
+        if self.counter>0:
+            self.splitted.destroy()
+        split=Toplevel(output)
+        self.splitted=split
+        self.counter+=1
+        """
+        mainFrame = Frame(split)
+        mainFrame.grid()
+        entryFrame=Frame(mainFrame,width=400,height=200)
+        entryFrame.grid(row=0,column=1)
+        entryFrame.columnconfigure(0,weight=10)
+        entryFrame.grid_propagate(False)
+        """
+        #split.geometry("400x200")
         #cv2.namedWindow('tk',cv2.WINDOW_NORMAL) no way to put text not on the photo
         #cv2.setWindowTitle("name")
         split.title(stateOb.name)#if i can get some info about the type of transform
         if isinstance(stateOb.getValue(),str):
             text = Label(split,text=stateOb.getValue())
-            text.pack()
+            text.pack(fill=BOTH,padx=50)
             #print(stateOb.getValue())
         else:
             cv2.imshow(stateOb.name,stateOb.getValue())
+            #cv2.imshow("hello",stateOb.getValue())
             #print("do Imshow....")
         l=0
         for stat in stateOb.statistics:
             l+=1
             if isinstance(stat,str):
                 text = Label(split,text=stat)
-                text.pack()
+                text.pack(fill=BOTH,expand=100)
             else:
                 cv2.imshow('tk'+str(l),stat)
             #print(stat)
+        #split.destroy()
     def __init__(self, master=None,x=400,y=300):#can initilize with a window size the number of total transforms equal (x*y)/5000
         Frame.__init__(self, master)
         self.master = master
         self.x=x
         self.y=y
+        self.counter=0
         self.init_window()
-
+        #self.split=Tk()
 
     #Creation of init_window
     def init_window(self):
@@ -62,6 +80,7 @@ class Window(Frame):
         self.master.title("Output")
         # allowing the widget to take the full space of the root window
         self.pack(fill=BOTH, expand=1)
+        #self.master.geometry("")
         self.master.geometry(str(self.x)+"x"+str(self.y))
 
 if __name__ == "__main__":
@@ -94,7 +113,7 @@ if __name__ == "__main__":
     s9 = State("bye6")
     s10 = State("bye1")
     s11=State(imagej)
-    outputOb.outputFunc([encodedL,encodedr1,encodedr2,encodedr3,s5,s6,s7,s8,s9,s10,s11])
+    outputOb.outputFunc([encodedL,encodedr1,encodedr2,encodedr3,s5,s6,s7,s8,s9,s10,s11],output)
     output.mainloop()
     #root.mainloop()
     #print("hello world")
