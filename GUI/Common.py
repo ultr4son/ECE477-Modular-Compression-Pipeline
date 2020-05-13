@@ -4,12 +4,13 @@ import tkinter.dnd as dnd
 
 TYPE_BITMAP = "bitmap"
 TYPE_BYTES = "bytes"
-TYPE_JPEG = "jpeg"
-
+TYPE_ENCODED = "encoded"
+TYPE_NIL = "none"
 TYPE_COLOR = {
     TYPE_BITMAP: "light blue",
     TYPE_BYTES: "purple",
-    TYPE_JPEG: "green"
+    TYPE_ENCODED: "red",
+    TYPE_NIL: "grey"
 }
 
 INSERT_BEFORE_COLUMN = 0
@@ -68,7 +69,7 @@ class TypeWidget(tk.Frame):
         self.typeText.grid()
 
 class TransformWidget(tk.Frame):
-    def __init__(self, master = None, name = "", inType = "", outType = "", transform = None, handleInsert = None):
+    def __init__(self, master = None, name = "", inType = "", outType = "", resolver = None,transform = None):
         super().__init__(master)
         self.master = master
         self.inType = inType
@@ -76,7 +77,8 @@ class TransformWidget(tk.Frame):
         self.name = name
         self.id = str(uuid.uuid4())
         self.transform = transform
-        self.handleInsert = handleInsert
+        self.resolver = resolver
+        self.static = False
 
         self.bind_class(self.tag(), "<Button-1>", self.clickEvent)
         self.config(highlightthickness=2)
@@ -96,23 +98,26 @@ class TransformWidget(tk.Frame):
         self.outTypeWidget.grid(column = OUTPUT_TYPE_COLUMN, row = 0)
         bindForWidget(self.tag(), self.outTypeWidget)
 
-        self.nameWidget = tk.Label(self, text = self.name, width = 10, height = 3)
+        self.nameWidget = tk.Label(self, text = self.name, width = 15, height = 3)
         self.nameWidget.grid(column = NAME_COLUMN, row = 0)
 
         bindForWidget(self.tag(), self.nameWidget)
 
-        self.insertBeforeButton = tk.Button(self, text = "+")
-        self.insertAfterButton = tk.Button(self, text = "+")
-
-        self.insertBeforeButton.grid(column = INSERT_BEFORE_COLUMN, row = 0, sticky = tk.N + tk.S + tk.E + tk.W)
-        self.insertAfterButton.grid(column = INSERT_AFTER_COLUMN, row = 0, sticky = tk.N + tk.S + tk.E + tk.W)
+        if self.inType != TYPE_NIL:
+            self.insertBeforeButton = tk.Button(self, text = "+")
+            self.insertBeforeButton.grid(column = INSERT_BEFORE_COLUMN, row = 0, sticky = tk.N + tk.S + tk.E + tk.W)
+        if self.outType != TYPE_NIL:
+            self.insertAfterButton = tk.Button(self, text = "+")
+            self.insertAfterButton.grid(column = INSERT_AFTER_COLUMN, row = 0, sticky = tk.N + tk.S + tk.E + tk.W)
 
 
     def dnd_end(self, target,  event):
         pass
 
     def clickEvent(self, event):
+        self.resolver.select_transform(self.inType, self.outType)
         self.focus()
-        dnd.dnd_start(self, event)
+        if not self.static:
+            dnd.dnd_start(self, event)
 
 

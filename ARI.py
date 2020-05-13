@@ -2,7 +2,7 @@ import string
 import sys
 import numpy as np
 import math
-from TransformState import State
+from Transform.TransformState import State
 
 #Function used in encoding to sort indices
 def column(matrix, i):

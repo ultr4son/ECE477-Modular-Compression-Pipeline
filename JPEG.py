@@ -1,9 +1,10 @@
 from PIL import Image
+import cv2 as cv
 import os
 import numpy as np
 
-from TransformState.py import State
-from Transform.TransformSystem.py import runTransformations
+from Transform.TransformState import State
+from Transform.TransformSystem import runTransformations
 
 class Jpeg:
     def __init__(self):
@@ -13,7 +14,7 @@ class Jpeg:
     def encode(self, input_file, output_file, qual):
         img = Image.open(input_file)    
         img.save(output_file, "jpeg", quality = qual)
-        return os.path.getsize(output_file)        
+        return os.path.getsize(output_file)
 
     def decode(self, input_file, output_file):
         img = Image.open(input_file)    
