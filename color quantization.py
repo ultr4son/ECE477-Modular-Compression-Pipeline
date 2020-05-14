@@ -9,7 +9,6 @@ class Color_Quantizaion:
     def __init__(self, input):
         self.input = input
 
-
     """
     ## Use Pillow to quantizatize without K means
     def random_quantization(self, State):
@@ -28,6 +27,7 @@ class Color_Quantizaion:
         return State
 
     """
+
     ## Use Opencv to quantizatize with K means
     def kmeans_quantization(self, State):
         K = input('Number of color quantization:')
@@ -42,12 +42,14 @@ class Color_Quantizaion:
         center = np.uint8(center)
         res = center[label.flatten()]
         KmeansQ = res.reshape((self.input.shape))
-        cv2.imwrite('kmeansQ.jpg',KmeansQ)
+        cv2.imwrite('original.jpg', img)
+        cv2.imwrite('kmeansQ.jpg', KmeansQ)
         cv2.imshow('Kmeans', KmeansQ)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
-        initialsize = os.path.getsize('LenaBaboon.jpg')
+        initialsize = os.path.getsize('original.jpg')
         kmeansQsize = os.path.getsize('kmeansQ.jpg')
+        State.setValue = (KmeansQ)
         State.statistics = ["Initial Size: " + str(initialsize), "Kmeans Quantization Size: " + str(kmeansQsize)]
         State.name = "Kmeans Color Quantization"
         return State
@@ -63,9 +65,7 @@ for r in Random_Quantization.statistics:
     print(r)
 """
 img = cv2.imread('LenaBaboon.jpg')
-State = Color_Quantizaion(img)
+State= Color_Quantizaion(img)
 Kmeans_Quantization = State.kmeans_quantization(s)
 for i in Kmeans_Quantization.statistics:
     print(i)
-
-
