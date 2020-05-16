@@ -1,31 +1,24 @@
-from PIL import Image
-import cv2 as cv
 import os
-import numpy as np
-
-from Transform.TransformState import State
-from Transform.TransformSystem import runTransformations
+import cv2
 
 class Jpeg:
-    def __init__(self):
-
+    def __init__(self, input):
+        self.input = input
         return
-    
-    def encode(self, input_file, output_file, qual):
-        img = Image.open(input_file)    
-        img.save(output_file, "jpeg", quality = qual)
+
+    #Quality range is 0 to 95
+    def encode(self, img, output_file, quality):
+        cv2.imwrite(output_file, img, [cv2.IMWRITE_JPEG_QUALITY, quality])    
         return os.path.getsize(output_file)
 
     def decode(self, input_file, output_file):
-        img = Image.open(input_file)    
-        img.save(output_file, "BMP")
+        cv2.imwrite(output_file, img)
         return os.path.getsize(output_file)
 
-
 if __name__ == '__main__':    
-    
     #Testing Jpeg class
-    transform = Jpeg()
-    print(transform.encode("MARBLES.BMP", "Marbles", 20))
-    print(transform.decode("Marbles", "Marbles2"))
-    
+    img = cv2.imread('MARBLES.BMP')
+    transform = Jpeg(img)
+    print(transform.encode(img, "MARBLES.jpg", 50))
+    img = cv2.imread("MARBLES.jpg")
+    print(transform.decode(img, "MARBLES2.BMP"))
