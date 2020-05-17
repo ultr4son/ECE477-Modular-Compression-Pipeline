@@ -1,4 +1,5 @@
 from queue import PriorityQueue
+from Transform.TransformState import State
 
 class  Huffman_Node(object):
     def __init__(self, left = None, right = None):
@@ -6,11 +7,13 @@ class  Huffman_Node(object):
         self.right = right
 
 class Huffman:
-    def __init__(self):
+    def __init__(self, bitsUsed = 10):
+        self.__bitsUsed = bitsUsed
         return
     
-    def encode(self, in_string):
+    def encode(self, stateOb):
         #Returns binary string that represent values
+        in_string = stateOb.getValue()
         self.freq_dict = self.calculate_frequency(in_string)
         self.tree = self.make_tree(self.freq_dict)
         self.lookup_table = self.make_table(self.tree, list(), dict())       
@@ -18,7 +21,11 @@ class Huffman:
         for i in in_string:
             for j in self.lookup_table[i]:
                 out_string.append(j)
-        return ''.join([str(elem) for elem in out_string])
+        final_string = ''.join([str(elem) for elem in out_string]) 
+        stateOb.statistics = ["Initial String: "+str(stateOb.getValue()), "Encoded String: "+str(final_string), "Initial Size(Bytes): " + str(len(in_string)), "Final Size(Bytes): " + str(len(final_string)/8)]
+        stateOb.setValue(final_string)
+        stateOb.name = "Huffman Encode"
+        return stateOb
 
     def calculate_frequency(self, in_string):
         frequencies = dict()
@@ -61,7 +68,9 @@ class Huffman:
         ltable.update(rtable)
         return ltable
 
-    def decode(self, in_string, tree):
+    def decode(self, stateOb, tree):
+        in_string = stateOb.getValue()
+        lengthInitial = len(in_string)
         self.tree = tree
         in_list = list()
         self.out_list = list()
@@ -70,7 +79,12 @@ class Huffman:
             in_list.append(i)
         self.decode_list(in_list, tree)
         #Turn list of chars back into a string
-        return ''.join([str(elem) for elem in self.out_list])
+        final_string = ''.join([str(elem) for elem in self.out_list])
+        stateOb.statistics = ["Initial Binary String: "+str(stateOb.getValue()), "Encoded String: "+str(final_string), "Initial Size(Bytes): " + str(len(in_string)/8), "Final Size(Bytes): " + str(len(final_string))]
+        stateOb.setValue(final_string)
+        stateOb.name = "Huffman Decode"
+        return stateOb
+
 
     def decode_list(self, in_list, tree):
         if tree[2].left == None and tree[2].right == None:
@@ -88,11 +102,20 @@ class Huffman:
                 self.decode_list(in_list, tree[2].right)
 
 if __name__ == '__main__':
-    in_string = "Hello World this is everett the quick brown fox jumped over the lazy dog"
+    #in_string = "Hello World this is everett the quick brown fox jumped over the lazy dog"
     huf = Huffman()
-    encoded_string = huf.encode(in_string)
+    s = State("Hello World this is everett the quick brown fox jumped over the lazy dog")
+    print("Input String:  \t", s.getValue())
+    
+    huf.encode(s)
+    print("Encoded String:\t", s.getValue())
     table = huf.lookup_table
-    print("Input String:  \t", in_string)
-    print("Encoded String:\t", huf.encode(in_string))
-    print("Encoded Table: \t", huf.lookup_table)
-    print("Decoded String:\t", huf.decode(encoded_string, huf.tree))
+    print("Lookup Table:  \t", huf.lookup_table)
+    for stat in s.statistics:
+        print(stat)
+
+    huf.decode(s, huf.tree)
+    print("Decoded String:\t", s.getValue())
+
+    for stat in s.statistics:
+        print(stat)
