@@ -3,7 +3,7 @@ import numpy as np
 import math
 from Transform.TransformState import State
 class RLE:
-    def __init__(self, runType,bitsUsed=5):#will change to 0, 1, or 2 0 for literal run, 1 for fill run and 2 for binary run
+    def __init__(self, runType=2,bitsUsed=5):#will change to 0, 1, or 2 0 for literal run, 1 for fill run and 2 for binary run
         self.__runType = runType#binary RLE needs another input can default to just 4?
         self.__bitsUsed = bitsUsed
     def runType1(self):
