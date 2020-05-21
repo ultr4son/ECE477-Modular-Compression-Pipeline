@@ -46,19 +46,24 @@ class TransformResolver(tk.Frame):
 		# T2.insert(tk.END, "                Available Transformations:     ")
 		# T2.place(relx=.50, rely=0.65, anchor='n')
 	def init_widgets(self):
-		self.btnJPEG = tk.Button(self, height=2, width=30, text=Constants.JPEG_ENCODING,
-								 command=self.transform_selected(WidgetInformation(Constants.JPEG_ENCODING, TYPE_BITMAP, TYPE_ENCODED, lambda **kwargs: JPEG.Jpeg(kwargs).encode)))
-		self.btnDIT = tk.Button(self, height = 2, width=30, text=Constants.DITHERING, command=self.transform_selected(WidgetInformation(Constants.DITHERING, TYPE_BITMAP, TYPE_BITMAP, lambda **kwargs: DIT.Dither(kwargs).encode)))
-		self.btnRGB = tk.Button(self, height = 2, width=30, text=Constants.RGB, command=self.transform_selected(WidgetInformation(Constants.RGB, TYPE_BITMAP, TYPE_BITMAP, lambda **kwargs: color_space.Color_Space(kwargs).RGB)))
-		self.btnYUV = tk.Button(self, height = 2, width=30, text=Constants.YUV, command=self.transform_selected(WidgetInformation(Constants.YUV, TYPE_BITMAP, TYPE_BITMAP, lambda **kwargs: color_space.Color_Space(kwargs).YUV)))
-		self.btnGreyscale = tk.Button(self, height = 2, width=30, text=Constants.GREYSCALE, command=self.transform_selected(WidgetInformation(Constants.GREYSCALE, TYPE_BITMAP, TYPE_BITMAP, lambda **kwargs: color_space.Color_Space(kwargs).Gray)))
-		self.btnColorQuantization = tk.Button(self, height = 2, width=30, text=Constants.COLOR_QUANTIZATION, command=self.transform_selected(WidgetInformation(Constants.COLOR_QUANTIZATION, TYPE_BITMAP, TYPE_BITMAP, lambda **kwargs: color_quantization.Color_Quantizaion(kwargs).kmeans_quantization)))
+		self.btnJPEG = tk.Button(self, height=2, width=30, text=Constants.JPEG_ENCODING, command=self.transform_selected(
+			WidgetInformation(Constants.JPEG_ENCODING, TYPE_BITMAP, TYPE_ENCODED,
+							  lambda kwargs: JPEG.Jpeg(**kwargs).encode), get_default_args(JPEG.Jpeg), {"quality": "Quality"}))
+		self.btnJPEGDecode = tk.Button(self, height=2, width=30, text=Constants.JPEG_DECODING, command=self.transform_selected(
+			WidgetInformation(Constants.JPEG_DECODING, TYPE_ENCODED, TYPE_BITMAP,
+							  lambda kwargs: JPEG.Jpeg(**kwargs).decode)))
+		self.btnDIT = tk.Button(self, height = 2, width=30, text=Constants.DITHERING, command=self.transform_selected(WidgetInformation(Constants.DITHERING, TYPE_BITMAP, TYPE_BITMAP, lambda kwargs: DIT.Dither(**kwargs).encode), get_default_args(DIT.Dither), {"ditherVal": "Dither Amount"}))
+		self.btnRGB = tk.Button(self, height = 2, width=30, text=Constants.RGB, command=self.transform_selected(WidgetInformation(Constants.RGB, TYPE_BITMAP, TYPE_BITMAP, lambda kwargs: color_space.Color_Space(**kwargs).RGB)))
+		self.btnYUV = tk.Button(self, height = 2, width=30, text=Constants.YUV, command=self.transform_selected(WidgetInformation(Constants.YUV, TYPE_BITMAP, TYPE_BITMAP, lambda kwargs: color_space.Color_Space(**kwargs).YUV)))
+		self.btnGreyscale = tk.Button(self, height = 2, width=30, text=Constants.GREYSCALE, command=self.transform_selected(WidgetInformation(Constants.GREYSCALE, TYPE_BITMAP, TYPE_BITMAP, lambda kwargs: color_space.Color_Space(**kwargs).Gray)))
+		self.btnColorQuantization = tk.Button(self, height = 2, width=30, text=Constants.COLOR_QUANTIZATION, command=self.transform_selected(WidgetInformation(Constants.COLOR_QUANTIZATION, TYPE_BITMAP, TYPE_BITMAP, lambda kwargs: color_quantization.Color_Quantizaion(**kwargs).kmeans_quantization)))
 
-		self.btnLZW = tk.Button(self, height=2, width=30, text=Constants.LZW_ENCODING, command=self.transform_selected(WidgetInformation("LZW Compression", TYPE_BYTES, TYPE_BYTES, lambda **kwargs: LZW.LZW(kwargs).encode)))
-		self.btnRLE = tk.Button(self, height=2, width=30, text=Constants.RUN_LENGTH_ENCODING, command=self.transform_selected(WidgetInformation("RLE Compression", TYPE_BYTES, TYPE_BYTES, lambda **kwargs: RLE.RLE(kwargs).encode)))
-		self.btnARI = tk.Button(self, height=2, width=30, text=Constants.ARITHMETIC_CODING, command=self.transform_selected(WidgetInformation("ARI Compression", TYPE_BYTES, TYPE_BYTES, lambda **kwargs: ARI.ARI(kwargs).encode)))
-		self.btnHUFF = tk.Button(self, height=2, width=30, text=Constants.HUFFMAN_ENCODING, command=self.transform_selected(WidgetInformation("Huffman Compression", TYPE_BYTES, TYPE_BYTES, lambda **kwargs: Huffman.Huffman(kwargs).encode)))
-		self.parameterInput = ParameterInput(self)
+		self.btnLZW = tk.Button(self, height=2, width=30, text=Constants.LZW_ENCODING, command=self.transform_selected(WidgetInformation("LZW Compression", TYPE_BYTES, TYPE_BYTES, lambda kwargs: LZW.LZW(**kwargs).encode)))
+		self.btnRLE = tk.Button(self, height=2, width=30, text=Constants.RUN_LENGTH_ENCODING, command=self.transform_selected(WidgetInformation("RLE Compression", TYPE_BYTES, TYPE_BYTES, lambda kwargs: RLE.RLE(**kwargs).encode)))
+		self.btnARI = tk.Button(self, height=2, width=30, text=Constants.ARITHMETIC_CODING, command=self.transform_selected(WidgetInformation("ARI Compression", TYPE_BYTES, TYPE_BYTES, lambda kwargs: ARI.ARI(**kwargs).encode)))
+		self.btnHUFF = tk.Button(self, height=2, width=30, text=Constants.HUFFMAN_ENCODING, command=self.transform_selected(WidgetInformation("Huffman Compression", TYPE_BYTES, TYPE_BYTES, lambda kwargs: Huffman.Huffman(**kwargs).encode)))
+		self.parameterInput = ParameterInput.ParameterInput(self)
+		self.parameterInput.pack(side = "bottom")
 	def display_transforms_for_type(self, inType, outType):
 
 		self.btnJPEG.pack_forget()
@@ -74,10 +79,10 @@ class TransformResolver(tk.Frame):
 		self.btnHUFF.pack_forget()
 
 		# Make buttons asking for compression types
-		if (inType == TYPE_BITMAP or inType == None) or (outType == TYPE_ENCODED or outType == None):
+		if (inType == TYPE_ENCODED or inType == None) or (outType == TYPE_BITMAP or outType == None):
 			self.btnJPEG.pack(side = "left")#(relx=.25, rely=0.69, anchor='n')
 
-		if (inType == TYPE_BYTES or inType == None) or (outType == TYPE_BYTES or outType == None):
+		if (inType == TYPE_BYTES or inType == None):
 			self.btnLZW.pack(side = "left")#place(relx=.25, rely=0.75, anchor='n')
 
 			self.btnRLE.pack(side = "left")#place(relx=.25, rely=0.81, anchor='n')
@@ -85,13 +90,14 @@ class TransformResolver(tk.Frame):
 			self.btnARI.pack(side = "left")#place(relx=.25, rely=0.87, anchor='n')
 
 			self.btnHUFF.pack(side = "left")#place(relx=.25, rely=0.93, anchor='n')
-		if (inType == TYPE_BITMAP or inType == None) or (outType == TYPE_BITMAP or outType == None):
+		if (inType == TYPE_BITMAP or inType == None):
 			self.btnDIT.pack(side = "left")
 			self.btnColorQuantization.pack(side = "left")
 			self.btnRGB.pack(side = "left")
 			self.btnYUV.pack(side="left")
 			self.btnGreyscale.pack(side="left")
-
+		if (outType == TYPE_ENCODED):
+			self.btnJPEGDecode.pack(side="left")
 	# Function for handling when a button is pressed
 	def transform_selected(self, widgetInformation, parameters = {}, displayNames = {}):
 		def handler():

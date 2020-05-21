@@ -32,7 +32,7 @@ class BuilderWindow(tk.Frame):
         def handler():
             if self.resolver.selected is not None:
                 selected = self.resolver.selected
-                self.insertTransform(position, selected.name, selected.inType, selected.outType, selected.transformInitializer())
+                self.insertTransform(position, selected.name, selected.inType, selected.outType, selected.transformInitializer(self.resolver.parameterInput.parameters))
         return handler
 
     def draw_state(self):
@@ -40,6 +40,7 @@ class BuilderWindow(tk.Frame):
         #     w.grid_forget()
         if len(self.transforms) == 0 and self.initialWidget is None:
             self.initialAddButton.grid(row=TRANSFORM_ROW, column=0, sticky="nsew", columnspan=5)
+            self.resolver.display_transforms_for_type(None, None)
         else:
             self.initialAddButton.grid_forget()
         c = 0

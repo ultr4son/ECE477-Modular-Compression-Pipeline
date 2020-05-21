@@ -4,13 +4,9 @@ import numpy as np
 
 #Define the class Dither
 class Dither:
-	def __init__(self, input, indicies = 3, ditherVal = 64, pixelVal = 4):
-		self.input = input
-
+	def __init__(self,  ditherVal = 64):
 		self.greyscale = False
-		self.indices = 3
-		self.ditherVal = 64
-		self.pixelVal = 4
+		self.ditherVal = ditherVal
 
 	#Returns the size of the input file
 	def getSize(self):
@@ -79,6 +75,7 @@ class Dither:
 		#encoded_file = self.ditherImageArray
 
 		value = stateOb.getValue()
+		stateOb.name = "Dithering"
 		initialSize = value.size * value.itemsize
 		if self.greyscale:
 			value = self.ditherGreyscaleImage(value, self.ditherVal)
@@ -87,6 +84,7 @@ class Dither:
 			value = self.ditherRGBimage(value, self.ditherVal)
 			stateOb.setValue(value)
 		stateOb.statistics = ["Pixel Range: " + str(255//self.ditherVal), "Initial Size: " + str(initialSize), "Final Size " + str(value.size * value.itemsize)]
+		return stateOb
 		#print(encoded_file)
 		#print(encoded_file.size)
 
