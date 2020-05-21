@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 from PIL import Image
 import os
-from TransformState import State
+from Transform.TransformState import State
 
 
 class Color_Quantizaion:
@@ -42,30 +42,32 @@ class Color_Quantizaion:
         center = np.uint8(center)
         res = center[label.flatten()]
         KmeansQ = res.reshape((self.input.shape))
-        cv2.imwrite('original.jpg', img)
-        cv2.imwrite('kmeansQ.jpg', KmeansQ)
-        cv2.imshow('Kmeans', KmeansQ)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-        initialsize = os.path.getsize('original.jpg')
-        kmeansQsize = os.path.getsize('kmeansQ.jpg')
-        State.setValue = (KmeansQ)
-        State.statistics = ["Initial Size: " + str(initialsize), "Kmeans Quantization Size: " + str(kmeansQsize)]
+        # cv2.imwrite('original.jpg', img)
+        # cv2.imwrite('kmeansQ.jpg', KmeansQ)
+        # cv2.imshow('Kmeans', KmeansQ)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
+
+        initialsize = img.size * img.itemsize#os.path.getsize('original.jpg')
+        kmeansQsize = img.size * img.itemsize #os.path.getsize('kmeansQ.jpg')
+        State.setValue(KmeansQ)
+        State.statistics = ["Initial Size: " + str(initialsize), "Kmeans Quantization Size: " + str(kmeansQsize), img]
         State.name = "Kmeans Color Quantization"
         return State
 
 
-##test
-s = State("")
-"""
-img = Image.open('LenaBaboon.jpg')
-State = Color_Quantizaion(img)
-Random_Quantization = State.random_quantization(img)
-for r in Random_Quantization.statistics:
-    print(r)
-"""
-img = cv2.imread('LenaBaboon.jpg')
-State= Color_Quantizaion(img)
-Kmeans_Quantization = State.kmeans_quantization(s)
-for i in Kmeans_Quantization.statistics:
-    print(i)
+if __name__ == "__main__":
+    ##test
+    s = State("")
+    """
+    img = Image.open('LenaBaboon.jpg')
+    State = Color_Quantizaion(img)
+    Random_Quantization = State.random_quantization(img)
+    for r in Random_Quantization.statistics:
+        print(r)
+    """
+    img = cv2.imread('LenaBaboon.jpg')
+    State= Color_Quantizaion(img)
+    Kmeans_Quantization = State.kmeans_quantization(s)
+    for i in Kmeans_Quantization.statistics:
+        print(i)

@@ -13,11 +13,12 @@ class Window(Frame):
         for stateOb in stateObList:
             #print(stateObList[i].getValue())
             #print(stateOb.getValue())
-            viewButton.append(Button(self, text="Transform"+str(i+1),command=lambda stateOb=stateOb:self.outputInfo(stateOb,output)))#kept it as transform because formatting is a bit easier
+
+            viewButton.append(Button(self, text="Transform "+stateOb.name,command=lambda stateOb=stateOb:self.outputInfo(stateOb,output)))#kept it as transform because formatting is a bit easier
             viewButton[i].place(x=j, y=k)
             #viewButton[i].pack(fill=BOTH,expand=1)
             i+=1
-            j+=100
+            j+=110
             if j%self.x == 0:
                 k+=50
                 j=0

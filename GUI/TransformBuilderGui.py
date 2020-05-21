@@ -14,6 +14,8 @@ RUN_BUTTON_COLUMN = 0
 IMPORT_IMAGE_COLUMN = 1
 IMPORT_TEXT_COLUMN = 2
 ADD_COLUMN = 3
+REMOVE_SELECTED_COLUMN = 4
+
 
 class BuilderWindow(tk.Frame):
     def __init__(self, master = None):
@@ -26,35 +28,45 @@ class BuilderWindow(tk.Frame):
         self.initialType = None
 
         self.create_widgets()
-    def insertAt(self, position):
+    def handleInstertAtLocation(self, position):
         def handler():
             if self.resolver.selected is not None:
                 selected = self.resolver.selected
-                self.insertTransform(position, selected.name, selected.inType, selected.outType, selected.function)
+                self.insertTransform(position, selected.name, selected.inType, selected.outType, selected.transformInitializer())
         return handler
 
-    def regrid_transforms(self):
+    def draw_state(self):
         # for w in self.transforms:
         #     w.grid_forget()
-        self.initialAddButton.grid_forget()
+        if len(self.transforms) == 0 and self.initialWidget is None:
+            self.initialAddButton.grid(row=TRANSFORM_ROW, column=0, sticky="nsew", columnspan=5)
+        else:
+            self.initialAddButton.grid_forget()
         c = 0
+
         if self.initialWidget is not None:
             self.initialWidget.grid(row = TRANSFORM_ROW, column = 0)
             c = 1
-
         for w in self.transforms:
             w.grid(row = TRANSFORM_ROW, column = c)
             c += 1
     def insertTransform(self, transformPosition, name, inType, outType, transformFunction):
 
         widget = TransformWidget(self, name = name, inType= inType, outType= outType, transform= transformFunction, resolver= self.resolver)
-
-        widget.insertBeforeButton['command'] = self.insertAt(transformPosition)
-        widget.insertAfterButton['command'] = self.insertAt(transformPosition + 1)
+        widget.bind_class(widget.tag(), "<Button-1>", self.handleWidgetClick)
+        widget.insertBeforeButton['command'] = self.handleInstertAtLocation(transformPosition)
+        widget.insertAfterButton['command'] = self.handleInstertAtLocation(transformPosition + 1)
         self.transforms.insert(transformPosition, widget)
-        self.regrid_transforms()
+        self.draw_state()
 
 
+    def handleWidgetClick(self, event):
+        transform = findParent(event.widget, TransformWidget)
+        self.resolver.display_transforms_for_type(transform.inType, transform.outType)
+        transform.focus()
+        self.selectedTransform = transform
+        if not transform.static:
+            dnd.dnd_start(transform, event)
 
     def create_widgets(self):
         self.runButton = tk.Button(self, text = "Run", command = self.handleRun)
@@ -69,7 +81,7 @@ class BuilderWindow(tk.Frame):
         # self.initialValue = cv.imread("../Transform/burmese.jpg")
         #
         self.initialAddButton = tk.Button(self, text = "+", command = self.initialAdd)
-        self.initialAddButton.grid(row = TRANSFORM_ROW, column = 0, sticky= "nsew", columnspan=4)
+        self.initialAddButton.grid(row = TRANSFORM_ROW, column = 0, sticky= "nsew", columnspan=5)
 
         self.importImageButton = tk.Button(self, text = "Import Bitmap", command = self.handleImportImage)
         self.importImageButton.grid(row = CONTROL_ROW, column = IMPORT_IMAGE_COLUMN)
@@ -77,15 +89,19 @@ class BuilderWindow(tk.Frame):
         self.importTextButton = tk.Button(self, text = "Import Text", command = self.handleImportText)
         self.importTextButton.grid(row = CONTROL_ROW, column = IMPORT_TEXT_COLUMN)
 
+        self.deleteButton = tk.Button(self, text = "Remove Selected", command = self.handleRemoveSelected)
+        self.deleteButton.grid(row = CONTROL_ROW, column = REMOVE_SELECTED_COLUMN)
+
         # self.addTransformButton = tk.Button(self, text = "Add Selected Transform", command = self.handleAddTransform)
         # self.addTransformButton.grid(row = CONTROL_ROW, column = ADD_COLUMN)
         newWindow = tk.Toplevel(self.master)
         self.resolver = tr.TransformResolver(newWindow)
-        self.resolver.select_transform(None, None)
+        self.resolver.display_transforms_for_type(None, None)
     def initialAdd(self):
         if self.resolver.selected is not None:
             self.initialAddButton.grid_forget()
-            self.insertAt(0)()
+            self.handleInstertAtLocation(0)()
+            self.resolver.display_transforms_for_type(self.resolver.selected.inType, self.resolver.selected.outType)
 
     def dnd_accept(self, target ,event):
         return self
@@ -96,20 +112,16 @@ class BuilderWindow(tk.Frame):
     def dnd_commit(self, source: TransformWidget, event):
 
         x, y = source.winfo_pointerxy()
-        target = self.getContainingTransormWidget(source.winfo_containing(x, y))
+        target = findParent(source.winfo_containing(x, y))
 
         sourceIndex = self.transforms.index(source)
         targetIndex = self.transforms.index(target)
 
         self.transforms[sourceIndex], self.transforms[targetIndex] = target, source
-        self.regrid_transforms()
+        self.draw_state()
 
     def dnd_leave(self, source, event):
         pass
-    def getContainingTransormWidget(self, source):
-        while not isinstance(source, TransformWidget):
-            source = source.master
-        return source
 
     def handleImportImage(self):
         fileName = filedialog.askopenfilename(title = "Select a bitmap file", filetypes = [("JPEG", "*.jpg"), ("Bitmap", "*.bmp")])
@@ -117,10 +129,17 @@ class BuilderWindow(tk.Frame):
         self.initialType = TYPE_BITMAP
         self.initialWidget = TransformWidget(self, "Image File", TYPE_NIL, TYPE_BITMAP, self.resolver, None)
         self.initialWidget.static = True
-        self.initialWidget.insertAfterButton['command'] = self.insertAt(1)
+        self.initialWidget.insertAfterButton['command'] = self.handleInstertAtLocation(1)
 
-        self.regrid_transforms()
-        self.resolver.select_transform(self.initialType, TYPE_NIL)
+        self.draw_state()
+        self.resolver.display_transforms_for_type(self.initialType, TYPE_NIL)
+
+    def handleRemoveSelected(self):
+        if self.selectedTransform is not None:
+            self.selectedTransform.grid_forget()
+            self.transforms.remove(self.selectedTransform)
+            self.selectedTransform.destroy()
+            self.draw_state()
 
 
     def handleImportText(self):
@@ -128,11 +147,11 @@ class BuilderWindow(tk.Frame):
         self.initialValue = file.read()
         self.initialType = TYPE_BYTES
         self.initialWidget = TransformWidget(self, "Text File", TYPE_NIL, TYPE_BYTES, self.resolver, None)
-        self.initialWidget.insertAfterButton['command'] = self.insertAt(1)
+        self.initialWidget.insertAfterButton['command'] = self.handleInstertAtLocation(1)
 
-        self.regrid_transforms()
+        self.draw_state()
         self.initialWidget.static = True
-        self.resolver.select_transform(self.initialType, TYPE_NIL)
+        self.resolver.display_transforms_for_type(self.initialType, TYPE_NIL)
 
     def handleRun(self):
         if self.initialValue is not None:

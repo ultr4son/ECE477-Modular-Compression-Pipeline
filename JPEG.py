@@ -2,8 +2,7 @@ import os
 import cv2
 
 class Jpeg:
-    def __init__(self, input):
-        self.input = input
+    def __init__(self):
         return
     
     def update_img(self, input):

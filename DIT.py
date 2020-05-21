@@ -4,14 +4,13 @@ import numpy as np
 
 #Define the class Dither
 class Dither:
-	def __init__(self, input):
+	def __init__(self, input, indicies = 3, ditherVal = 64, pixelVal = 4):
 		self.input = input
 
-	greyscale = True
-	indices = 3
-	ditherVal = 64
-	pixelVal = 4
-	ditheredImageArray = ""
+		self.greyscale = False
+		self.indices = 3
+		self.ditherVal = 64
+		self.pixelVal = 4
 
 	#Returns the size of the input file
 	def getSize(self):
@@ -27,7 +26,7 @@ class Dither:
 		return True
 
 	#Dither image with resolution according to ditherVal
-	def ditherGreyscaleImage(self, ditherVal, outputFileName):
+	def ditherGreyscaleImage(self, ditherVal):
 		blue_channel = self.input[:,:,0]
 		A1 = blue_channel//ditherVal
 		A2 = np.multiply(A1, ditherVal)
@@ -38,18 +37,19 @@ class Dither:
 		new_img[:,:,1] = A2
 		new_img[:,:,2] = A2
 		self.ditherImageArray = A1
-		cv2.imwrite(outputFileName, new_img)
-		self.pixelVal = (255//ditherVal)
+		#cv2.imwrite(outputFileName, new_img)
+		#self.pixelVal = (255//ditherVal)
+		return new_img
 		#testing
 		#print(blue_channel)
 		#print(A1)	#A1 has pixel values before encoding
 		#print(A2)	#A2 has pixel values after encoding
 
 	#Dither a color image
-	def ditherRGBimage(self, ditherVal, outputFileName):
-		B_chan = self.input[:,:,0]
-		R_chan = self.input[:,:,2]
-		G_chan = self.input[:,:,1]
+	def ditherRGBimage(self, input, ditherVal):
+		B_chan = input[:,:,0]
+		R_chan = input[:,:,2]
+		G_chan = input[:,:,1]
 		
 		AB1 = B_chan//ditherVal
 		AB2 = np.multiply(AB1,ditherVal)
@@ -67,18 +67,28 @@ class Dither:
 		new_img[:,:,0] = AB2
 		new_img[:,:,2] = AR2
 		new_img[:,:,1] = AG2
-		self.ditherImageArray = AB1
-		cv2.imwrite(outputFileName, new_img)
-		self.pixelVal = (255//ditherVal)	
-
+#		self.ditherImageArray = AB1
+#		cv2.imwrite(outputFileName, new_img)
+#		self.pixelVal = (255//ditherVal)
+		return new_img
 
 		
 
 	#Encode the dithered image
-	def encode(self):
-		encoded_file = self.ditherImageArray
-		print(encoded_file)
-		print(encoded_file.size)
+	def encode(self, stateOb):
+		#encoded_file = self.ditherImageArray
+
+		value = stateOb.getValue()
+		initialSize = value.size * value.itemsize
+		if self.greyscale:
+			value = self.ditherGreyscaleImage(value, self.ditherVal)
+			stateOb.setValue(value)
+		else:
+			value = self.ditherRGBimage(value, self.ditherVal)
+			stateOb.setValue(value)
+		stateOb.statistics = ["Pixel Range: " + str(255//self.ditherVal), "Initial Size: " + str(initialSize), "Final Size " + str(value.size * value.itemsize)]
+		#print(encoded_file)
+		#print(encoded_file.size)
 
 
 

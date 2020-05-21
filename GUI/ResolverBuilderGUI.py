@@ -108,7 +108,7 @@ class Builderwindow(tk.Frame):
     def handleImportImage(self):
         fileName = filedialog.askopenfilename(title = "Select a bitmap file", filetypes = [("JPEG", "*.jpg"), ("Bitmap", "*.bmp")])
         self.initialValue = cv.imread(fileName)
-        self.initialType = TYPE_JPEG
+        self.initialType = TYPE_ENCODED
         self.runButton["state"] = "normal"
 
     def handleImportText(self):

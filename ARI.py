@@ -16,6 +16,7 @@ class ARI:
 	dummyVal = 0
 
 	def encode(self, stateOb):
+		stateOb.name = "Aritmetic Coding"
 		#Read in file
 		arr0 = stateOb.getValue()
 		numEntries = len(arr0)
@@ -136,6 +137,7 @@ class ARI:
 			print(low.dtype)
 			#f1 = np.binary_repr(interval[0])
 			#print(f1)
+		return stateOb
 
 
 

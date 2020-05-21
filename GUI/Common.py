@@ -25,6 +25,10 @@ def colorForType(type):
     return "white"
 def bindForWidget(tag, widget):
     widget.bindtags((tag, ) + widget.bindtags())
+def findParent(widget, parentType):
+    if isinstance(widget, parentType):
+        return widget
+    return findParent(widget.master, parentType)
 
 class ConnectWidget(tk.Frame):
     def __init__(self, master=None):
@@ -80,7 +84,7 @@ class TransformWidget(tk.Frame):
         self.resolver = resolver
         self.static = False
 
-        self.bind_class(self.tag(), "<Button-1>", self.clickEvent)
+        #self.bind_class(self.tag(), "<Button-1>", self.clickEvent)
         self.config(highlightthickness=2)
         self.grid()
         self.create_widgets()
@@ -114,10 +118,5 @@ class TransformWidget(tk.Frame):
     def dnd_end(self, target,  event):
         pass
 
-    def clickEvent(self, event):
-        self.resolver.select_transform(self.inType, self.outType)
-        self.focus()
-        if not self.static:
-            dnd.dnd_start(self, event)
 
 
