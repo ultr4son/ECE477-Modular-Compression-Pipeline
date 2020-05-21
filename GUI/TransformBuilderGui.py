@@ -113,7 +113,7 @@ class BuilderWindow(tk.Frame):
     def dnd_commit(self, source: TransformWidget, event):
 
         x, y = source.winfo_pointerxy()
-        target = findParent(source.winfo_containing(x, y))
+        target = findParent(source.winfo_containing(x, y), TransformWidget)
 
         sourceIndex = self.transforms.index(source)
         targetIndex = self.transforms.index(target)
