@@ -6,9 +6,8 @@ from Transform.TransformState import State
 
 
 class Color_Quantizaion:
-    def __init__(self, input):
-        self.input = input
-
+    def __init__(self):
+        pass
     """
     ## Use Pillow to quantizatize without K means
     def random_quantization(self, State):

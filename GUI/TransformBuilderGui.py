@@ -28,11 +28,11 @@ class BuilderWindow(tk.Frame):
         self.initialType = None
 
         self.create_widgets()
-    def handleInstertAtLocation(self, position):
+    def handleInstertAtLocation(self, insertWidget, before):
         def handler():
             if self.resolver.selected is not None:
                 selected = self.resolver.selected
-                self.insertTransform(position, selected.name, selected.inType, selected.outType, selected.transformInitializer(self.resolver.parameterInput.parameters))
+                self.insertTransform(insertWidget, before, selected.name, selected.inType, selected.outType, selected.transformInitializer(self.resolver.parameterInput.parameters))
         return handler
 
     def draw_state(self):
@@ -51,13 +51,20 @@ class BuilderWindow(tk.Frame):
         for w in self.transforms:
             w.grid(row = TRANSFORM_ROW, column = c)
             c += 1
-    def insertTransform(self, transformPosition, name, inType, outType, transformFunction):
+    def insertTransform(self, insertWidget, before, name, inType, outType, transformFunction):
 
         widget = TransformWidget(self, name = name, inType= inType, outType= outType, transform= transformFunction, resolver= self.resolver)
         widget.bind_class(widget.tag(), "<Button-1>", self.handleWidgetClick)
-        widget.insertBeforeButton['command'] = self.handleInstertAtLocation(transformPosition)
-        widget.insertAfterButton['command'] = self.handleInstertAtLocation(transformPosition + 1)
-        self.transforms.insert(transformPosition, widget)
+        widget.insertBeforeButton['command'] = self.handleInstertAtLocation(widget, True)
+        widget.insertAfterButton['command'] = self.handleInstertAtLocation(widget, False)
+        if insertWidget:
+            index = self.transforms.index(insertWidget)
+            if before:
+                self.transforms.insert(index, widget)
+            else:
+                self.transforms.insert(index + 1, widget)
+        else:
+            self.transforms.insert(0, widget)
         self.draw_state()
 
 
@@ -101,7 +108,7 @@ class BuilderWindow(tk.Frame):
     def initialAdd(self):
         if self.resolver.selected is not None:
             self.initialAddButton.grid_forget()
-            self.handleInstertAtLocation(0)()
+            self.handleInstertAtLocation(None, False)()
             self.resolver.display_transforms_for_type(self.resolver.selected.inType, self.resolver.selected.outType)
 
     def dnd_accept(self, target ,event):

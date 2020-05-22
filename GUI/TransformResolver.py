@@ -124,9 +124,9 @@ class TransformResolver(tk.Frame):
 					self.btnRGB,
 					self.btnYUV,
 					self.btnGreyscale,
-					self.btnBitmapToBytes ],
+					self.btnBytesToBitmap ],
 			TYPE_ENCODED: [
-				self.btnJPEGDecode
+				self.btnJPEG
 			]
 		}
 		self.outputDictionary = {
@@ -143,7 +143,7 @@ class TransformResolver(tk.Frame):
 				self.btnGreyscale,
 				self.btnBitmapToBytes ],
 			TYPE_ENCODED: [
-				self.btnJPEG
+				self.btnJPEGDecode
 			]
 		}
 	def display_transforms_for_type(self, inType, outType):
