@@ -137,7 +137,7 @@ class BuilderWindow(tk.Frame):
         self.initialType = TYPE_BITMAP
         self.initialWidget = TransformWidget(self, "Image File", TYPE_NIL, TYPE_BITMAP, self.resolver, None)
         self.initialWidget.static = True
-        self.initialWidget.insertAfterButton['command'] = self.handleInstertAtLocation(1)
+        self.initialWidget.insertAfterButton['command'] = self.handleInstertAtLocation(None, False)
 
         self.draw_state()
         self.resolver.display_transforms_for_type(self.initialType, TYPE_NIL)
@@ -155,7 +155,7 @@ class BuilderWindow(tk.Frame):
         self.initialValue = file.read()
         self.initialType = TYPE_BYTES
         self.initialWidget = TransformWidget(self, "Text File", TYPE_NIL, TYPE_BYTES, self.resolver, None)
-        self.initialWidget.insertAfterButton['command'] = self.handleInstertAtLocation(1)
+        self.initialWidget.insertAfterButton['command'] = self.handleInstertAtLocation(None,False)
 
         self.draw_state()
         self.initialWidget.static = True

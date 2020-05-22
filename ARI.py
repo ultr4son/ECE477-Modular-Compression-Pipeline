@@ -9,11 +9,10 @@ def column(matrix, i):
     return [row[i] for row in matrix]
 
 class ARI:
-	def __init__(self, runType):
-		self.__runType = runType
+	def __init__(self):
+		pass
 
-
-	dummyVal = 0
+	# dummyVal = 0
 
 	def encode(self, stateOb):
 		stateOb.name = "Aritmetic Coding"
