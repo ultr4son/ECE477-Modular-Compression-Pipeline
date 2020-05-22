@@ -14,11 +14,11 @@ class Window(Frame):
             #print(stateObList[i].getValue())
             #print(stateOb.getValue())
 
-            viewButton.append(Button(self, text="Transform "+stateOb.name,command=lambda stateOb=stateOb:self.outputInfo(stateOb,output)))#kept it as transform because formatting is a bit easier
+            viewButton.append(Button(self, text=stateOb.name,command=lambda stateOb=stateOb:self.outputInfo(stateOb,output)))#kept it as transform because formatting is a bit easier
             viewButton[i].place(x=j, y=k)
             #viewButton[i].pack(fill=BOTH,expand=1)
             i+=1
-            j+=110
+            j+=200
             if j%self.x == 0:
                 k+=50
                 j=0
@@ -76,7 +76,7 @@ class Window(Frame):
                 cv2.imshow('tk'+str(l),stat)
             #print(stat)
         #split.destroy()
-    def __init__(self, master=None,x=400,y=300):#can initilize with a window size the number of total transforms equal (x*y)/5000
+    def __init__(self, master=None,x=600,y=300):#can initilize with a window size the number of total transforms equal (x*y)/5000
         Frame.__init__(self, master)
         self.master = master
         self.x=x
@@ -95,7 +95,7 @@ class Window(Frame):
         self.pack(fill=BOTH, expand=1)
         #self.master.geometry("")
         self.master.geometry(str(self.x)+"x"+str(self.y))
-        
+
 if __name__ == "__main__":
     output = Tk()
 
