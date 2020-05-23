@@ -1,9 +1,12 @@
 import numpy as np
+import math
 
 class BitmapToBytes:
     def encode(self, stateOb):
         stateOb.name = "Bitmap To Bytes"
-        stateOb.setValue(stateOb.getValue().tostring())
+        bytes = stateOb.getValue().tobytes()
+        asString = "".join(map(chr, bytes))
+        stateOb.setValue(asString)
         return stateOb
 
 class BytesToBitmap:
@@ -12,10 +15,12 @@ class BytesToBitmap:
 
     def encode(self, stateOb):
         value = stateOb.getValue()
-        asList = list(value)
-        xLength = int(len(asList) * self.aspect)
-        yLength = int(len(asList) * (1/self.aspect))
-        arr = np.frombuffer(value)
-        arr.reshape((xLength, yLength))
+        ords = list(map(ord, value))
+        arr = np.frombuffer(bytearray(ords), dtype=np.uint8)
+        xLength = int(math.sqrt((arr.size / 3) * self.aspect))
+        yLength = int(math.sqrt((arr.size / 3) * 1/self.aspect))
+        arr = np.resize(arr, xLength * yLength * 3)
+        arr = arr.reshape((xLength, yLength, 3))
         stateOb.setValue(arr)
+        stateOb.name = "Bytes To Bitmap"
         return stateOb

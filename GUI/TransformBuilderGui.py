@@ -7,6 +7,8 @@ from GUI.outputview import *
 import Transform.TransformExample
 import GUI.TransformResolver as tr
 import LZW
+from functools import *
+
 CONTROL_ROW = 0
 TRANSFORM_ROW = 1
 
@@ -38,6 +40,7 @@ class BuilderWindow(tk.Frame):
     def draw_state(self):
         # for w in self.transforms:
         #     w.grid_forget()
+        self.updateRunState()
         if len(self.transforms) == 0 and self.initialWidget is None:
             self.initialAddButton.grid(row=TRANSFORM_ROW, column=0, sticky="nsew", columnspan=5)
             self.resolver.display_transforms_for_type(None, None)
@@ -105,6 +108,7 @@ class BuilderWindow(tk.Frame):
         newWindow = tk.Toplevel(self.master)
         self.resolver = tr.TransformResolver(newWindow)
         self.resolver.display_transforms_for_type(None, None)
+        self.updateRunState()
     def initialAdd(self):
         if self.resolver.selected is not None:
             self.initialAddButton.grid_forget()
@@ -161,12 +165,24 @@ class BuilderWindow(tk.Frame):
         self.initialWidget.static = True
         self.resolver.display_transforms_for_type(self.initialType, TYPE_NIL)
 
+    def updateRunState(self):
+        self.runButton["state"] = "normal" if self.validSystem() and self.initialValue is not None else "disable"
+
+    def validSystem(self):
+        currentOutType = self.initialType
+        for t in self.transforms:
+            if t.inType != currentOutType:
+                return False
+            currentOutType = t.outType
+        return True
+
     def handleRun(self):
         if self.initialValue is not None:
-            (_, states) = runTransformations([widget.transform for widget in self.transforms], self.initialValue)
-            newWindow = tk.Toplevel(self.master)
-            outputWindow = Window(newWindow)
-            outputWindow.outputFunc(states, self)
+            if self.validSystem():
+                (_, states) = runTransformations([widget.transform for widget in self.transforms], self.initialValue)
+                newWindow = tk.Toplevel(self.master)
+                outputWindow = Window(newWindow)
+                outputWindow.outputFunc(states, self)
         
     # def handleAddTransform(self):
     #     #TODO: put call to transform window here

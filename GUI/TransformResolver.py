@@ -124,7 +124,8 @@ class TransformResolver(tk.Frame):
 					self.btnRGB,
 					self.btnYUV,
 					self.btnGreyscale,
-					self.btnBytesToBitmap ],
+					self.btnBitmapToBytes
+					 ],
 			TYPE_ENCODED: [
 				self.btnJPEG
 			]
