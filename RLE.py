@@ -96,25 +96,23 @@ class RLE:
             n = 0
             finalArray=""
             initialBString=stateOb.getValue()
-            #holderArray=""
             decimal = (2**self.__bitsUsed)-1
             checkIfDecimals=0
-            #if stateOb.value1()[0]=='1':
-            #    finalArray=('0'*self.__bitsUsed)
             while i < length:
                 if stateOb.getValue()[i] == '0':
-                    countZs=countZs+1
-                if stateOb.getValue()[i] == '1' or i+1==length:
-                    if countZs>decimal:
+                    countZs=countZs+1 #count the number of zeroes
+                if stateOb.getValue()[i] == '1' or i+1==length: 
+                    if countZs>decimal:#if multiple sets are needed
                         checkIfDecimals=float(countZs/decimal)
-                        if checkIfDecimals%1 < .00001:
+                        if checkIfDecimals%1 < .00001: #uses max set of 1s. Ex. 1111 1111 0000
                             n=math.ceil(n)
                             n=int(n)
                             for j in range(0,n):
                                 finalArray=finalArray+('1'*self.__bitsUsed)
                             finalArray=finalArray+('0'*self.__bitsUsed)
                             countZs=0
-                        else:
+                        else: #if there is a one or more sets of max 1s but the last one is not.
+                            #Ex. 1111 0101
                             n=math.ceil(checkIfDecimals)
                             n= int(n)
                             for j in range(0,n-1):
@@ -122,11 +120,9 @@ class RLE:
                                 finalArray=finalArray+('1'*self.__bitsUsed)
                             finalArray=finalArray+'{0:0{j}b}'.format(countZs,j=self.__bitsUsed)
                             countZs=0
-                    else:
+                    else: #if there is only 1 set needed. Also accounts for multiple 1s
                         finalArray=finalArray+'{0:0{j}b}'.format(countZs,j=self.__bitsUsed)
                         countZs = 0
-                    #while stateOb.value1()[i+1] == '1'
-                    #    i=i+1
                 i=i+1
             binaryHolder=""
             readableString=""
@@ -219,28 +215,25 @@ class RLE:
             initialBString=stateOb.getValue()
             while hold < (len(stateOb.getValue())-1):
                 arrayHold=""
-                for i in range(hold,hold+self.__bitsUsed):
+                for i in range(hold,hold+self.__bitsUsed): #get the binary value of bitsUsed length
                     arrayHold=arrayHold+stateOb.getValue()[i]
                 hold=i+1
-                #print(i)
-                if arrayHold == ('1'*self.__bitsUsed):
+                if arrayHold == ('1'*self.__bitsUsed): #if full set of 1s
                     finalArray=finalArray+("0"*int(arrayHold,2))
                     checkIfOne = 0
-                elif arrayHold == ('0'*self.__bitsUsed) and checkIfOne == 1:
+                elif arrayHold == ('0'*self.__bitsUsed) and checkIfOne == 1: #if full set of 0s
                     finalArray=finalArray+"1"
-                elif arrayHold == ('0'*self.__bitsUsed) and checkIfOne == 0:
+                elif arrayHold == ('0'*self.__bitsUsed) and checkIfOne == 0: #if full set of 0s because 1s
                     checkIfOne=1
-                    if hold!=len(stateOb.getValue()):
+                    if hold!=len(stateOb.getValue()): #if its the last set of 1s
                         finalArray=finalArray+"1"
-                else:
+                else: #if a regular set of 1s and 0s, input in the necessary number of 0s
                     finalArray=finalArray+("0"*int(arrayHold,2))
                     if hold!=len(stateOb.getValue()):
                         finalArray=finalArray+"1"
-
             stateOb.setValue(finalArray)
             stateOb.statistics = ["Initial Size(Bytes): " + str(lengthInitial/8), "Final Size(Bytes): " + str(len(finalArray)/8),"Initial Binary String: "+str(initialBString)]
             stateOb.name="RLE Decode Binary Run"
-            #stateOb.info(len(finalArray)/8)
             return stateOb
 
 
