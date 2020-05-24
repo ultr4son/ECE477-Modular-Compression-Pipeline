@@ -15,15 +15,9 @@ class LZW:
         dictionary = {chr(i): i for i in range(sizeOfDict)}#ascii table up to 256
         s = stateOb.getValue()[0]
         for c in stateOb.getValue()[1:]:
-            #c = stateOb.getValue()[i]
-            #i=i+1
-            #print("hi")
-            #for j in range(0,len(dictionary)):
-            if (s+c) in dictionary:
-                #print(s)
+            if (s+c) in dictionary: #if its in table, add together strings
                 s = s+c
-                #break
-            else:
+            else: #if not already in table, put int table
                 finalArray.append(dictionary[s])
                 dictionary[(s+c)] = sizeOfDict
                 sizeOfDict = sizeOfDict+1
@@ -31,11 +25,9 @@ class LZW:
         finalArray.append(dictionary[s])
         for i in range(0,len(finalArray)):
             finalString=finalString+'{0:0{j}b}'.format(int(finalArray[i]),j=self.__bitsUsed)#convert everything to binary
-            #finalString=finalString+'{0:08b}'.format(int(finalArray[i]))
         stateOb.statistics = ["Initial Size(Bytes): " + str(length), "Final Size(Bytes): " + str(len(finalString)/8),"Initial String: "+str(stateOb.getValue()),"Encoded String: "+str(','.join(map(str,finalArray))),"Bits Used: "+str(self.__bitsUsed)]
         stateOb.setValue(finalString)
         stateOb.name="LZW Encode"
-        #print(finalArray)
         return stateOb
     def decode(self,stateOb):
         sizeOfDict = 256
@@ -43,8 +35,6 @@ class LZW:
         finalString=""
         length = len(stateOb.getValue())
         dictionary = {i: chr(i) for i in range(sizeOfDict)}#ascii table up to 256
-        #print("dict value: ",dictionary[94])
-        #print(dictionary)
         binaryString=""
         i=0
         hold = 0
@@ -56,20 +46,17 @@ class LZW:
             hold = i+1
             finalArray.append(number)
             number =""
-        #print("dict value: ",dictionary[1])
         s = "NIL"
         for k in finalArray:
-            #print(k)
             if k in dictionary:
                 entry = dictionary[int(k)]
-            else:#exception handler checks in case the dictionary hasnt been filled in yet
+            else:
                 entry = s + s[0]
             finalString=finalString+str(entry)
             if s != "NIL":
                 dictionary[sizeOfDict] = (s+entry[0])#update dictionary
                 sizeOfDict = sizeOfDict+1
             s = entry
-        #print(finalString)
         stateOb.statistics = ["Initial Size(Bytes): " + str(length/8), "Final Size(Bytes): " + str(len(finalString)),"Initial Binary String: "+str(stateOb.getValue())]
         stateOb.setValue(finalString)
         stateOb.name="LZW Decode"
