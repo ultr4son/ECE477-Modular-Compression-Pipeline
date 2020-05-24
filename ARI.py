@@ -1,7 +1,4 @@
-import string
-import sys
-import numpy as np
-import math
+from queue import PriorityQueue
 from Transform.TransformState import State
 
 #Function used in encoding to sort indices
@@ -9,146 +6,105 @@ def column(matrix, i):
     return [row[i] for row in matrix]
 
 class ARI:
-	def __init__(self):
-		pass
+    def __init__(self):
+        return
+        
+    def encode(self, stateOb):
+        in_string = stateOb.getValue()
+        self.freq_dict = self.calculate_frequency(in_string)
+        #Makes self.ranges list of lists
+        self.make_ranges()
+        interval = self.get_interval(in_string)
+        final_string = self.range_to_bin_string(interval[0], interval[1])
+        stateOb.statistics = ["Initial Binary String: "+str(stateOb.getValue()), "Encoded String: "+str(final_string), "Initial Size(Bytes): " + str(len(stateOb.getValue())*8), "Final Size(Bytes): " + str(len(final_string)/8)]
+        stateOb.setValue(final_string)
+        stateOb.name = "Arithmetic Encoding"
+        return stateOb
 
-	# dummyVal = 0
+    def decode(self, stateOb, freqs):
+        """in_string = stateOb.getValue()
+        code_value = self.bin_to_decimal(in_string)
+        self.freq_dict = freqs
+        print(self.freq_dict)
 
-	def encode(self, stateOb):
-		stateOb.name = "Aritmetic Coding"
-		#Read in file
-		arr0 = stateOb.getValue()
-		numEntries = len(arr0)
-		arr1 = sorted(stateOb.getValue())
-		print("Sorted Input: ", arr1)		
+        
+        self.make_ranges()
+        print(self.freq_dict)
+        #print(self.freq_dict)
+        
+        #self.freq_dict = freqs
+        #print(freqs)"""
 
-		#Dictionary to hold input values and associated probabilities
-		unique, counts = np.unique(arr1, return_counts=True)		
-		inputMap = dict(zip(unique,counts))
-		inputMap = {k: v / total for total in (sum(inputMap.values()),) for k, v in inputMap.items()}
-		uniqueEntries = len(inputMap.keys())
-		#print(inputMap)
+    def calculate_frequency(self, in_string):
+        frequencies = dict()
+        #Puts frequencies in a dictionary structure
+        self.in_string_length = 0
+        for ch in in_string:
+            self.in_string_length += 1
+            if ch in frequencies.keys():
+                frequencies[ch] += 1
+            else:
+                frequencies[ch] = 1 
+        return frequencies
 
-		#Create structured array to hold all values with different datatypes at each index
-		b = sorted(inputMap.items(), key=lambda x: x[1], reverse=True)
-		b2 = column(b, 0)
-		b3 = column(b, 1)
-		y1 = np.array(list(b2))					#Entry
-		y2 = np.array(list(b3))					#Probability
-		y3 = np.zeros(uniqueEntries)			#upperBound
-		y4 = np.zeros(uniqueEntries)			#lowerBound
-		records = np.rec.fromarrays((y1,y2,y3,y4), names=('entry','probability','uBound','lBound'))
-		#print("Structured array of values and data types: \n", records, "\n", records.dtype)
-		#print("Sum of all probabilities        : ", np.sum(records.probability[:])) 
+    def make_ranges(self):
+        
+        ordered_freqs = PriorityQueue()
+        for ch, freq in self.freq_dict.items():
+            self.freq_dict[ch] = self.freq_dict[ch]/self.in_string_length
+            ordered_freqs.put((freq/self.in_string_length, ch))
+        #Creating a list of lists in the form of [[char1, lower range1, higher range1], [char2, lower range...]...]
+        self.ranges = list()
+        #self.ranges.clear()
+        prev_freq = ordered_freqs.get()
+        self.ranges.append([prev_freq[1], 0, prev_freq[0]])
+        i = 0
+        while ordered_freqs.qsize() > 0:
+            print(prev_freq)
+            current_freq = ordered_freqs.get()
+            self.ranges.append([current_freq[1], self.ranges[i][2], current_freq[0] + self.ranges[i][2]])
+            prev_freqs = current_freq
+            i += 1
+        return
+    
+    
+    def get_interval(self, in_string):
+        high = 1.0
+        low = 0.0
+        rang = high - low
+        k = 0
+        for i in in_string:
+            for j in self.ranges:
+                if i == j[0]:
+                    high = low + rang*j[2]
+                    low = low + rang*j[1]
+                    rang = high - low
+        return [low, high]             
 
-		#Determine uBound and lBound
-		#uBound
-		dec = 1.0
-		for i in range(0, len(records)):
-			if i == 0:
-				records.uBound[i] = dec
-			else:
-				dec = dec - records.probability[i-1]
-				records.uBound[i] = dec
-		#lBound
-		for i in range(0, len(records)):
-			if i == (len(records)-1):
-				records.lBound[i] = 0.0
-			else:
-				records.lBound[i] = records.uBound[i+1]
-		print("Array: ", records)
+    def bin_to_decimal(self, bin_str):
+        #turns the binary string into a decimal number
+        decimal_num = 0.0
+        for i in range(len(bin_str)):
+            if int(bin_str[i]) == 1:
+                decimal_num += pow(.5, i+1)
+        return decimal_num
 
-		#Determine interval value from list of entries
-		interval = [0,0]
-		print(arr0)
-		for i in range(0, numEntries):			#i iterates through the input list
-			#Get character from what is entered and the index of character in records
-			char = arr0[i]		
-			#Find character index
-			for j in range(0,len(records.entry)):
-				if char == records.entry[j]:
-					charIndex = j
-
-			if(i == 0):
-				print("---------------")
-				interval[0] = records.lBound[charIndex]
-				interval[1] = records.uBound[charIndex]
-				intervalRange = records.uBound[charIndex] - records.lBound[charIndex]
-				
-				#1. Calculate new probabilities
-				for x in range(0, len(records)):
-					records.probability[x] = records.probability[x] * records.probability[charIndex]
-
-				#2. Calculate new upper bound for each entry in records
-				dec = intervalRange
-				for x in range(0, len(records)):
-					if x == 0:
-						records.uBound[x] = dec
-					else:
-						dec = dec - records.probability[x-1]
-						records.uBound[x] = dec
-				#3. Calculate new lower bound for each entry in records
-				for x in range(0, len(records)):
-					if x == (len(records)-1):
-						records.lBound[x] = 0.0
-					else:
-						records.lBound[x] = records.uBound[x+1]
-
-
-			else:
-				intervalRange = intervalRange * records.probability[charIndex]
-				interval[0] = records.lBound[charIndex]
-				interval[1] = records.uBound[charIndex]
-				intervalRange = records.uBound[charIndex] - records.lBound[charIndex]
-				
-				#1. Calculate new probabilities
-				for x in range(0, len(records)):
-					records.probability[x] = records.probability[x] * records.probability[charIndex]
-
-				#2. Calculate new upper bound for each entry in records
-				dec = intervalRange
-				for x in range(0, len(records)):
-					if x == 0:
-						records.uBound[x] = dec
-					else:
-						dec = dec - records.probability[x-1]
-						records.uBound[x] = dec
-				#3. Calculate new lower bound for each entry in records
-				for x in range(0, len(records)):
-					if x == (len(records)-1):
-						records.lBound[x] = 0.0
-					else:
-						records.lBound[x] = records.uBound[x+1]
-
-
-			print("Iteration: ", i+1, " interval is: ", interval)
-			print("Interval Range: ", intervalRange)
-			print("Character: ", char)
-			print("Character Index: ", charIndex)
-			print("---------------")
-
-
-			#Find smallest binary representation in interval variable
-			print(interval[0].dtype)
-			#print(len(interval[0]]))
-			low = interval[0].astype(np.int64)
-			print(low)
-			print(low.dtype)
-			#f1 = np.binary_repr(interval[0])
-			#print(f1)
-		return stateOb
-
-
-
-	def decode(self, stateOb):
-		self.dummyVal = 2
-
+    def range_to_bin_string(self, low, high):
+        code = list()
+        while self.bin_to_decimal(code) < low or len(code) == 0:
+            code.append(1)
+            if self.bin_to_decimal(code) > high:        
+                code.pop()
+                code.append(0)
+        final_string = ''.join([str(elem) for elem in code])
+        #Returns the frequency values so decoder can parse binary string"""
+        return final_string
 
 
 if __name__ == "__main__":
-	#Testing
-	a = ARI(1)
-	#s = State("AABCAACC")
-	s = State("MMMMFFVVVF")
-	#s = State("ABC")
-	a.encode(s)
+        #Testing
+        a = ARI()
+        s = State("baac")
+        s = a.encode(s)
+        print(s.statistics)
+        #a.decode(s, a.freq_dict)
