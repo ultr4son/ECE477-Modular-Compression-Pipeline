@@ -17,8 +17,6 @@ import TypeChange
 
 matchType = 0
 
-
-
 class WidgetInformation:
 
 	def __init__(self, name, inType, outType, transformInitializer):
@@ -43,10 +41,10 @@ class TransformResolver(tk.Frame):
 		self.selected_label = tk.Label(self, height = 1, width = 59, text = "Selected: ")
 		self.selected_label.grid(row = 1, column = 0, columnspan =2 )#.pack(side = "top")
 
-		self.inputLabel = tk.Label(self, height = 1, width = 30, text = "Inputs")
+		self.inputLabel = tk.Label(self, height = 1, width = 30, text = "Generates")
 		self.inputLabel.grid(row = 4, column = 0)
 
-		self.outputLabel = tk.Label(self, height = 1, width = 30, text = "Outputs")
+		self.outputLabel = tk.Label(self, height = 1, width = 30, text = "Recives")
 		self.outputLabel.grid(row = 4, column = 1)
 
 		self.init_widgets()
@@ -60,64 +58,90 @@ class TransformResolver(tk.Frame):
 									 WidgetInformation(Constants.JPEG_ENCODING, TYPE_BITMAP, TYPE_ENCODED,
 													   lambda kwargs: JPEG.Jpeg(**kwargs).encode),
 									 get_default_args(JPEG.Jpeg), {"quality": "Quality"}))
+
 		self.btnJPEGDecode = tk.Button(self, height=2, width=30, text=Constants.JPEG_DECODING,
 									   command=self.transform_selected(
 										   WidgetInformation(Constants.JPEG_DECODING, TYPE_ENCODED, TYPE_BITMAP,
 															 lambda kwargs: JPEG.Jpeg(**kwargs).decode)))
+
 		self.btnDIT = tk.Button(self, height=2, width=30, text=Constants.DITHERING, command=self.transform_selected(
 			WidgetInformation(Constants.DITHERING, TYPE_BITMAP, TYPE_BITMAP,
 							  lambda kwargs: DIT.Dither(**kwargs).encode), get_default_args(DIT.Dither),
 			{"ditherVal": "Dither Amount"}))
+
 		self.btnRGB = tk.Button(self, height=2, width=30, text=Constants.RGB, command=self.transform_selected(
 			WidgetInformation(Constants.RGB, TYPE_BITMAP, TYPE_BITMAP,
 							  lambda kwargs: color_space.Color_Space(**kwargs).RGB)))
+
 		self.btnYUV = tk.Button(self, height=2, width=30, text=Constants.YUV, command=self.transform_selected(
 			WidgetInformation(Constants.YUV, TYPE_BITMAP, TYPE_BITMAP,
 							  lambda kwargs: color_space.Color_Space(**kwargs).YUV)))
+
 		self.btnGreyscale = tk.Button(self, height=2, width=30, text=Constants.GREYSCALE,
 									  command=self.transform_selected(
 										  WidgetInformation(Constants.GREYSCALE, TYPE_BITMAP, TYPE_BITMAP,
 															lambda kwargs: color_space.Color_Space(**kwargs).Gray)))
+
 		self.btnColorQuantization = tk.Button(self, height=2, width=30, text=Constants.COLOR_QUANTIZATION,
 											  command=self.transform_selected(
 												  WidgetInformation(Constants.COLOR_QUANTIZATION, TYPE_BITMAP,
 																	TYPE_BITMAP,
 																	lambda kwargs: color_quantization.Color_Quantizaion(
-																		**kwargs).kmeans_quantization)))
+																		**kwargs).kmeans_quantization), get_default_args(color_quantization.Color_Quantizaion), {"K": "Colors"}))
 
 		self.btnLZW = tk.Button(self, height=2, width=30, text=Constants.LZW_ENCODING, command=self.transform_selected(
-			WidgetInformation("LZW Compression", TYPE_BYTES, TYPE_BYTES, lambda kwargs: LZW.LZW(**kwargs).encode)))
+			WidgetInformation(Constants.LZW_ENCODING, TYPE_BYTES, TYPE_BYTES, lambda kwargs: LZW.LZW(**kwargs).encode)))
+
+		self.btnLZWDecoding = tk.Button(self, height=2, width=30, text=Constants.LZW_DECODING, command=self.transform_selected(
+			WidgetInformation(Constants.LZW_DECODING, TYPE_BYTES, TYPE_BYTES, lambda kwargs: LZW.LZW(**kwargs).decode)))
+
 		self.btnRLE = tk.Button(self, height=2, width=30, text=Constants.RUN_LENGTH_ENCODING,
 								command=self.transform_selected(
-									WidgetInformation("RLE Compression", TYPE_BYTES, TYPE_BYTES,
+									WidgetInformation(Constants.RUN_LENGTH_ENCODING, TYPE_BYTES, TYPE_BYTES,
 													  lambda kwargs: RLE.RLE(**kwargs).encode)))
+
+		self.btnRLEDecoding = tk.Button(self, height=2, width=30, text=Constants.RUN_LENGTH_DECODING,
+								command=self.transform_selected(
+									WidgetInformation(Constants.RUN_LENGTH_DECODING, TYPE_BYTES, TYPE_BYTES,
+													  lambda kwargs: RLE.RLE(**kwargs).decode)))
+
 		self.btnARI = tk.Button(self, height=2, width=30, text=Constants.ARITHMETIC_CODING,
 								command=self.transform_selected(
-									WidgetInformation("ARI Compression", TYPE_BYTES, TYPE_BYTES,
+									WidgetInformation(Constants.ARITHMETIC_CODING, TYPE_BYTES, TYPE_BYTES,
 													  lambda kwargs: ARI.ARI(**kwargs).encode)))
 		self.btnHUFF = tk.Button(self, height=2, width=30, text=Constants.HUFFMAN_ENCODING,
 								 command=self.transform_selected(
-									 WidgetInformation("Huffman Compression", TYPE_BYTES, TYPE_BYTES,
+									 WidgetInformation(Constants.HUFFMAN_ENCODING, TYPE_BYTES, TYPE_BYTES,
 													   lambda kwargs: Huffman.Huffman(**kwargs).encode)))
+		self.btnHUFFDecoding = tk.Button(self, height=2, width=30, text= Constants.HUFFMAN_DECODING,
+								 command=self.transform_selected(
+									 WidgetInformation(Constants.HUFFMAN_DECODING, TYPE_BYTES, TYPE_BYTES,
+													   lambda kwargs: Huffman.Huffman(**kwargs).decode)))
+
 		self.btnBitmapToBytes = tk.Button(self, height=2, width=30, text="Bitmap to Bytes",
 										  command=self.transform_selected(
 											  WidgetInformation("Bitmap to Bytes", TYPE_BITMAP, TYPE_BYTES,
 																lambda kwargs: TypeChange.BitmapToBytes(
 																	**kwargs).encode)))
+
 		self.btnBytesToBitmap = tk.Button(self, height=2, width=30, text="Bytes to Bitmap",
 										  command=self.transform_selected(
 											  WidgetInformation("Bytes to Bitmap", TYPE_BYTES, TYPE_BITMAP,
 																lambda kwargs: TypeChange.BytesToBitmap(
 																	**kwargs).encode),
 											  get_default_args(TypeChange.BytesToBitmap), {"aspect": "Aspect Ratio"}))
+
 		self.parameterInput = ParameterInput.ParameterInput(self)
 		self.parameterInput.grid(row = 3, column = 0, columnspan = 2)
 		# self.parameterInput.pack(side = "bottom")
 		self.inputDictionary = {
 			TYPE_BYTES: [ self.btnLZW,
+						  self.btnLZWDecoding,
 						  self.btnRLE,
+						  self.btnRLEDecoding,
 						  self.btnARI,
 			     		  self.btnHUFF,
+						  self.btnHUFFDecoding,
 						  self.btnBytesToBitmap ],
 			TYPE_BITMAP: [
 					self.btnDIT,
@@ -125,7 +149,8 @@ class TransformResolver(tk.Frame):
 					self.btnRGB,
 					self.btnYUV,
 					self.btnGreyscale,
-					self.btnBitmapToBytes
+					self.btnBitmapToBytes,
+					self.btnJPEG
 					 ],
 			TYPE_ENCODED: [
 				self.btnJPEG
@@ -133,17 +158,21 @@ class TransformResolver(tk.Frame):
 		}
 		self.outputDictionary = {
 			TYPE_BYTES: [ self.btnLZW,
+						  self.btnLZWDecoding,
 						  self.btnRLE,
+						  self.btnRLEDecoding,
 						  self.btnARI,
 			     		  self.btnHUFF,
-						  self.btnBytesToBitmap ],
+						  self.btnHUFFDecoding,
+						  self.btnBytesToBitmap],
 			TYPE_BITMAP: [
 				self.btnDIT,
 				self.btnColorQuantization,
 				self.btnRGB,
 				self.btnYUV,
 				self.btnGreyscale,
-				self.btnBitmapToBytes ],
+				self.btnBitmapToBytes,
+				self.btnJPEG],
 			TYPE_ENCODED: [
 				self.btnJPEGDecode
 			]

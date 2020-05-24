@@ -51,9 +51,12 @@ class BuilderWindow(tk.Frame):
         if self.initialWidget is not None:
             self.initialWidget.grid(row = TRANSFORM_ROW, column = 0)
             c = 1
-        for w in self.transforms:
-            w.grid(row = TRANSFORM_ROW, column = c)
-            c += 1
+        if len(self.transforms) == 0:
+            self.resolver.display_transforms_for_type(None, self.initialType)
+        else:
+            for w in self.transforms:
+                w.grid(row = TRANSFORM_ROW, column = c)
+                c += 1
     def insertTransform(self, insertWidget, before, name, inType, outType, transformFunction):
 
         widget = TransformWidget(self, name = name, inType= inType, outType= outType, transform= transformFunction, resolver= self.resolver)
@@ -137,14 +140,15 @@ class BuilderWindow(tk.Frame):
 
     def handleImportImage(self):
         fileName = filedialog.askopenfilename(title = "Select a bitmap file", filetypes = [("JPEG", "*.jpg"), ("Bitmap", "*.bmp")])
-        self.initialValue = cv.imread(fileName)
-        self.initialType = TYPE_BITMAP
-        self.initialWidget = TransformWidget(self, "Image File", TYPE_NIL, TYPE_BITMAP, self.resolver, None)
-        self.initialWidget.static = True
-        self.initialWidget.insertAfterButton['command'] = self.handleInstertAtLocation(None, False)
+        if fileName != "":
+            self.initialValue = cv.imread(fileName)
+            self.initialType = TYPE_BITMAP
+            self.initialWidget = TransformWidget(self, "Image File", TYPE_NIL, TYPE_BITMAP, self.resolver, None)
+            self.initialWidget.static = True
+            self.initialWidget.insertAfterButton['command'] = self.handleInstertAtLocation(None, False)
 
-        self.draw_state()
-        self.resolver.display_transforms_for_type(self.initialType, TYPE_NIL)
+            self.draw_state()
+            self.resolver.display_transforms_for_type(TYPE_NIL, self.initialType)
 
     def handleRemoveSelected(self):
         if self.selectedTransform is not None:
@@ -156,14 +160,15 @@ class BuilderWindow(tk.Frame):
 
     def handleImportText(self):
         file = filedialog.askopenfile(title = "Select a text file", mode="r", filetypes = [("Text", "*.txt"), ("All", "*.*")])
-        self.initialValue = file.read()
-        self.initialType = TYPE_BYTES
-        self.initialWidget = TransformWidget(self, "Text File", TYPE_NIL, TYPE_BYTES, self.resolver, None)
-        self.initialWidget.insertAfterButton['command'] = self.handleInstertAtLocation(None,False)
+        if file is not None:
+            self.initialValue = file.read()
+            self.initialType = TYPE_BYTES
+            self.initialWidget = TransformWidget(self, "Text File", TYPE_NIL, TYPE_BYTES, self.resolver, None)
+            self.initialWidget.insertAfterButton['command'] = self.handleInstertAtLocation(None,False)
 
-        self.draw_state()
-        self.initialWidget.static = True
-        self.resolver.display_transforms_for_type(self.initialType, TYPE_NIL)
+            self.draw_state()
+            self.initialWidget.static = True
+            self.resolver.display_transforms_for_type(TYPE_NIL, self.initialType)
 
     def updateRunState(self):
         self.runButton["state"] = "normal" if self.validSystem() and self.initialValue is not None else "disable"

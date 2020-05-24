@@ -6,7 +6,8 @@ from Transform.TransformState import State
 
 
 class Color_Quantizaion:
-    def __init__(self):
+    def __init__(self, K = 32):
+        self.K = K
         pass
     """
     ## Use Pillow to quantizatize without K means
@@ -29,9 +30,9 @@ class Color_Quantizaion:
 
     ## Use Opencv to quantizatize with K means
     def kmeans_quantization(self, State):
-        K = input('Number of color quantization:')
-        K = int(K)
-        Z = self.input.reshape((-1, 3))
+        input = State.getValue()
+        K = self.K
+        Z = input.reshape((-1, 3))
         # convert to np.float32
         Z = np.float32(Z)
         # define criteria, number of clusters(K) and apply kmeans()
@@ -40,17 +41,17 @@ class Color_Quantizaion:
         # Now convert back into uint8, and make original image
         center = np.uint8(center)
         res = center[label.flatten()]
-        KmeansQ = res.reshape((self.input.shape))
+        KmeansQ = res.reshape((input.shape))
         # cv2.imwrite('original.jpg', img)
         # cv2.imwrite('kmeansQ.jpg', KmeansQ)
         # cv2.imshow('Kmeans', KmeansQ)
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()
 
-        initialsize = img.size * img.itemsize#os.path.getsize('original.jpg')
-        kmeansQsize = img.size * img.itemsize #os.path.getsize('kmeansQ.jpg')
+        initialsize = input.size * input.itemsize#os.path.getsize('original.jpg')
+        kmeansQsize = input.size * input.itemsize #os.path.getsize('kmeansQ.jpg')
         State.setValue(KmeansQ)
-        State.statistics = ["Initial Size: " + str(initialsize), "Kmeans Quantization Size: " + str(kmeansQsize), img]
+        State.statistics = ["Initial Size: " + str(initialsize), "Kmeans Quantization Size: " + str(kmeansQsize)]
         State.name = "Kmeans Color Quantization"
         return State
 
