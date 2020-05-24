@@ -49,6 +49,8 @@ class RLE:
             while i < length:
                 j = i+1#make sure this doesnt equal length
                 if j>=length:
+                    finalArray = finalArray+('{0:08b}'.format(int(count)))+(''.join(format(ord(x), '08b') for x in stateOb.getValue()[j-1]))
+                    stateOb.setValue(stateOb.getValue()[0:j-1]+str(count)+stateOb.getValue()[j-1:])
                     break
                 #print("i value: ",stateOb.value1()[i])
                 #print("j value: ",stateOb.value1()[j])
