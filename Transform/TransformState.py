@@ -26,4 +26,5 @@ class State:
     statistics: list
 
     name:str
+    tree: object
 

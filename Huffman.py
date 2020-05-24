@@ -7,8 +7,7 @@ class  Huffman_Node(object):
         self.right = right
 
 class Huffman:
-    def __init__(self, bitsUsed = 10):
-        self.__bitsUsed = bitsUsed
+    def __init__(self):
         return
     
     def encode(self, stateOb):

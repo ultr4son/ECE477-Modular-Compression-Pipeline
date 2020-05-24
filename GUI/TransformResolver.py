@@ -54,6 +54,7 @@ class TransformResolver(tk.Frame):
 		# T2.insert(tk.END, "                Available Transformations:     ")
 		# T2.place(relx=.50, rely=0.65, anchor='n')
 	def init_widgets(self):
+
 		self.btnJPEG = tk.Button(self, height=2, width=30, text=Constants.JPEG_ENCODING,
 								 command=self.transform_selected(
 									 WidgetInformation(Constants.JPEG_ENCODING, TYPE_BITMAP, TYPE_ENCODED,

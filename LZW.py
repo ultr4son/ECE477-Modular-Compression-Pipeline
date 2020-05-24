@@ -4,8 +4,8 @@ import numpy as np
 import math
 from Transform.TransformState import State
 class LZW:
-    def __init__(self,bitsUsed=10):#the number of bits used will represent how many entries are in the dictionary+256 ascii defualt is 10 bits
-        self.__bitsUsed = bitsUsed
+    def __init__(self):#the number of bits used will represent how many entries are in the dictionary+256 ascii defualt is 10 bits
+        self.__bitsUsed = 10
     def encode(self,stateOb):
         sizeOfDict = 256
         finalArray=[]
@@ -29,6 +29,7 @@ class LZW:
         stateOb.setValue(finalString)
         stateOb.name="LZW Encode"
         return stateOb
+
     def decode(self,stateOb):
         sizeOfDict = 256
         finalArray=[]
