@@ -22,18 +22,17 @@ class ARI:
         return stateOb
 
     def decode(self, stateOb, freqs):
-        """in_string = stateOb.getValue()
+        in_string = stateOb.getValue()
         code_value = self.bin_to_decimal(in_string)
         self.freq_dict = freqs
-        print(self.freq_dict)
-
-        
         self.make_ranges()
-        print(self.freq_dict)
-        #print(self.freq_dict)
-        
-        #self.freq_dict = freqs
-        #print(freqs)"""
+        out_list = self.eval_interval(self.ranges, code_value)
+        final_string = ''.join([str(elem) for elem in out_list]) 
+        print(final_string)
+        stateOb.statistics = ["Initial Binary String: "+str(stateOb.getValue()), "Encoded String: "+str(final_string), "Initial Size(Bytes): " + str(len(in_string)/8), "Final Size(Bytes): " + str(len(final_string))]
+        stateOb.setValue(final_string)
+        stateOb.name = "Arithmetic Decoding"
+        return stateOb
 
     def calculate_frequency(self, in_string):
         frequencies = dict()
@@ -48,19 +47,19 @@ class ARI:
         return frequencies
 
     def make_ranges(self):
-        
+        total_freqs = 0
+        for ch, freq in self.freq_dict.items():
+            total_freqs += freq
         ordered_freqs = PriorityQueue()
         for ch, freq in self.freq_dict.items():
-            self.freq_dict[ch] = self.freq_dict[ch]/self.in_string_length
-            ordered_freqs.put((freq/self.in_string_length, ch))
+            self.freq_dict[ch] = self.freq_dict[ch]/total_freqs
+            ordered_freqs.put((freq/total_freqs, ch))
         #Creating a list of lists in the form of [[char1, lower range1, higher range1], [char2, lower range...]...]
         self.ranges = list()
-        #self.ranges.clear()
         prev_freq = ordered_freqs.get()
         self.ranges.append([prev_freq[1], 0, prev_freq[0]])
         i = 0
         while ordered_freqs.qsize() > 0:
-            print(prev_freq)
             current_freq = ordered_freqs.get()
             self.ranges.append([current_freq[1], self.ranges[i][2], current_freq[0] + self.ranges[i][2]])
             prev_freqs = current_freq
@@ -80,6 +79,24 @@ class ARI:
                     low = low + rang*j[1]
                     rang = high - low
         return [low, high]             
+        
+    def eval_interval(self, ranges, value):
+        output_string = list()
+        while value != 0:
+            for i in range(len(ranges)):
+                if ranges[i][1] <= value and ranges[i][2] > value:
+                    low = ranges[i][1]
+                    high = ranges[i][2]
+                    rang = high - low
+                    value = (value-low)/rang
+                    #I used this check because my calculations were causing inaccurate
+                    #values for my current example, but this check also fails for other
+                    #examples too
+                    if value == 0:
+                        output_string.append(ranges[i-1][0])
+                    else:
+                        output_string.append(ranges[i][0])
+        return output_string
 
     def bin_to_decimal(self, bin_str):
         #turns the binary string into a decimal number
@@ -107,4 +124,5 @@ if __name__ == "__main__":
         s = State("baac")
         s = a.encode(s)
         print(s.statistics)
-        #a.decode(s, a.freq_dict)
+        a.decode(s, a.freq_dict)
+        print(s.statistics)
