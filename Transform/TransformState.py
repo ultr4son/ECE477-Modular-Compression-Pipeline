@@ -27,4 +27,5 @@ class State:
 
     name:str
     freq_table: object
+    str_length: int
 
