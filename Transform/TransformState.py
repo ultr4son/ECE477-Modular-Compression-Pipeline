@@ -26,5 +26,5 @@ class State:
     statistics: list
 
     name:str
-    tree: object
+    freq_table: object
 
