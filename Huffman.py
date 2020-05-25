@@ -24,6 +24,7 @@ class Huffman:
         stateOb.statistics = ["Initial String: "+str(stateOb.getValue()), "Encoded String: "+str(final_string), "Initial Size(Bytes): " + str(len(in_string)), "Final Size(Bytes): " + str(len(final_string)/8)]
         stateOb.setValue(final_string)
         stateOb.name = "Huffman Encode"
+        stateOb.tree = self.freq_dict
         return stateOb
 
     def calculate_frequency(self, in_string):
@@ -67,16 +68,16 @@ class Huffman:
         ltable.update(rtable)
         return ltable
 
-    def decode(self, stateOb, tree):
+    def decode(self, stateOb):
         in_string = stateOb.getValue()
         lengthInitial = len(in_string)
-        self.tree = tree
+        self.tree = self.make_tree(stateOb.tree)
         in_list = list()
         self.out_list = list()
         #Need to turn binary string into list first
         for i in in_string:
             in_list.append(i)
-        self.decode_list(in_list, tree)
+        self.decode_list(in_list, self.tree)
         #Turn list of chars back into a string
         final_string = ''.join([str(elem) for elem in self.out_list])
         stateOb.statistics = ["Initial Binary String: "+str(stateOb.getValue()), "Encoded String: "+str(final_string), "Initial Size(Bytes): " + str(len(in_string)/8), "Final Size(Bytes): " + str(len(final_string))]
@@ -103,17 +104,17 @@ class Huffman:
 if __name__ == '__main__':
     #in_string = "Hello World this is everett the quick brown fox jumped over the lazy dog"
     huf = Huffman()
-    s = State("Hello World this is everett the quick brown fox jumped over the lazy dog")
+    s = State("aaabcccd")
     print("Input String:  \t", s.getValue())
     
-    huf.encode(s)
+    s = huf.encode(s)
+    print(s.tree)
     print("Encoded String:\t", s.getValue())
-    table = huf.lookup_table
     print("Lookup Table:  \t", huf.lookup_table)
     for stat in s.statistics:
         print(stat)
 
-    huf.decode(s, huf.tree)
+    huf.decode(s)
     print("Decoded String:\t", s.getValue())
 
     for stat in s.statistics:
