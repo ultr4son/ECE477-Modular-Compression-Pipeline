@@ -24,7 +24,7 @@ class Huffman:
         stateOb.statistics = ["Initial String: "+str(stateOb.getValue()), "Encoded String: "+str(final_string), "Initial Size(Bytes): " + str(len(in_string)), "Final Size(Bytes): " + str(len(final_string)/8)]
         stateOb.setValue(final_string)
         stateOb.name = "Huffman Encode"
-        stateOb.tree = self.freq_dict
+        stateOb.freq_table = self.freq_dict
         return stateOb
 
     def calculate_frequency(self, in_string):
@@ -71,7 +71,7 @@ class Huffman:
     def decode(self, stateOb):
         in_string = stateOb.getValue()
         lengthInitial = len(in_string)
-        self.tree = self.make_tree(stateOb.tree)
+        self.tree = self.make_tree(stateOb.freq_table)
         in_list = list()
         self.out_list = list()
         #Need to turn binary string into list first
@@ -108,9 +108,8 @@ if __name__ == '__main__':
     print("Input String:  \t", s.getValue())
     
     s = huf.encode(s)
-    print(s.tree)
     print("Encoded String:\t", s.getValue())
-    print("Lookup Table:  \t", huf.lookup_table)
+    print("Lookup Table:  \t", s.freq_table)
     for stat in s.statistics:
         print(stat)
 
