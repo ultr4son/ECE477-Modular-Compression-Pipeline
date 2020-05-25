@@ -1,10 +1,6 @@
 from queue import PriorityQueue
 from Transform.TransformState import State
 
-#Function used in encoding to sort indices
-def column(matrix, i):
-    return [row[i] for row in matrix]
-
 class ARI:
     def __init__(self):
         return
@@ -16,20 +12,21 @@ class ARI:
         self.make_ranges()
         interval = self.get_interval(in_string)
         final_string = self.range_to_bin_string(interval[0], interval[1])
-        stateOb.statistics = ["Initial Binary String: "+str(stateOb.getValue()), "Encoded String: "+str(final_string), "Initial Size(Bytes): " + str(len(stateOb.getValue())*8), "Final Size(Bytes): " + str(len(final_string)/8)]
+        stateOb.statistics = ["Initial String: "+str(stateOb.getValue()), "Encoded String: "+str(final_string), "Initial Size(Bytes): " + str(len(stateOb.getValue())*8), "Final Size(Bytes): " + str(len(final_string)/8)]
         stateOb.setValue(final_string)
         stateOb.name = "Arithmetic Encoding"
+        stateOb.freq_dict = self.freq_dict
+        stateOb.str_length = len(in_string)
         return stateOb
 
-    def decode(self, stateOb, freqs):
+    def decode(self, stateOb):
         in_string = stateOb.getValue()
         code_value = self.bin_to_decimal(in_string)
-        self.freq_dict = freqs
+        self.freq_dict = stateOb.freq_dict
         self.make_ranges()
-        out_list = self.eval_interval(self.ranges, code_value)
+        out_list = self.eval_interval(self.ranges, code_value, stateOb.str_length)
         final_string = ''.join([str(elem) for elem in out_list]) 
-        print(final_string)
-        stateOb.statistics = ["Initial Binary String: "+str(stateOb.getValue()), "Encoded String: "+str(final_string), "Initial Size(Bytes): " + str(len(in_string)/8), "Final Size(Bytes): " + str(len(final_string))]
+        stateOb.statistics = ["Encoded Binary String: "+str(stateOb.getValue()), "Decoded String: "+str(final_string), "Initial Size(Bytes): " + str(len(in_string)/8), "Final Size(Bytes): " + str(len(final_string))]
         stateOb.setValue(final_string)
         stateOb.name = "Arithmetic Decoding"
         return stateOb
@@ -80,22 +77,23 @@ class ARI:
                     rang = high - low
         return [low, high]             
         
-    def eval_interval(self, ranges, value):
+    def eval_interval(self, ranges, value, str_length):
         output_string = list()
-        while value != 0:
+        while len(output_string) < str_length:
+            check_once = False
+            #check_once makes sure that it iterates only once into the if statement for every j value
             for i in range(len(ranges)):
-                if ranges[i][1] <= value and ranges[i][2] > value:
+                if ranges[i][1] <= value and ranges[i][2] > value and check_once == False:
                     low = ranges[i][1]
                     high = ranges[i][2]
                     rang = high - low
                     value = (value-low)/rang
-                    #I used this check because my calculations were causing inaccurate
-                    #values for my current example, but this check also fails for other
-                    #examples too
                     if value == 0:
                         output_string.append(ranges[i-1][0])
                     else:
                         output_string.append(ranges[i][0])
+                    check_once = True
+        print(output_string)
         return output_string
 
     def bin_to_decimal(self, bin_str):
@@ -121,8 +119,8 @@ class ARI:
 if __name__ == "__main__":
         #Testing
         a = ARI()
-        s = State("baac")
+        s = State("The quick browww")
         s = a.encode(s)
         print(s.statistics)
-        a.decode(s, a.freq_dict)
+        a.decode(s)
         print(s.statistics)
