@@ -109,6 +109,12 @@ class TransformResolver(tk.Frame):
 								command=self.transform_selected(
 									WidgetInformation(Constants.ARITHMETIC_CODING, TYPE_BYTES, TYPE_BYTES,
 													  lambda kwargs: ARI.ARI(**kwargs).encode)))
+
+		self.btnARIDecode = tk.Button(self, height=2, width=30, text=Constants.ARITHMETIC_DECODING,
+								command=self.transform_selected(
+									WidgetInformation(Constants.ARITHMETIC_DECODING, TYPE_BYTES, TYPE_BYTES,
+													  lambda kwargs: ARI.ARI(**kwargs).decode)))
+
 		self.btnHUFF = tk.Button(self, height=2, width=30, text=Constants.HUFFMAN_ENCODING,
 								 command=self.transform_selected(
 									 WidgetInformation(Constants.HUFFMAN_ENCODING, TYPE_BYTES, TYPE_BYTES,
@@ -140,16 +146,19 @@ class TransformResolver(tk.Frame):
 						  self.btnRLE,
 						  self.btnRLEDecoding,
 						  self.btnARI,
+						  self.btnARIDecode,
 			     		  self.btnHUFF,
 						  self.btnHUFFDecoding,
-						  self.btnBytesToBitmap ],
+						  #self.btnBytesToBitmap
+
+						  ],
 			TYPE_BITMAP: [
 					self.btnDIT,
 					self.btnColorQuantization,
 					self.btnRGB,
 					self.btnYUV,
 					self.btnGreyscale,
-					self.btnBitmapToBytes,
+					#self.btnBitmapToBytes,
 					self.btnJPEG
 					 ],
 			TYPE_ENCODED: [
@@ -162,16 +171,18 @@ class TransformResolver(tk.Frame):
 						  self.btnRLE,
 						  self.btnRLEDecoding,
 						  self.btnARI,
+						  self.btnARIDecode,
 			     		  self.btnHUFF,
 						  self.btnHUFFDecoding,
-						  self.btnBytesToBitmap],
+						  #self.btnBytesToBitmap
+						  ],
 			TYPE_BITMAP: [
 				self.btnDIT,
 				self.btnColorQuantization,
 				self.btnRGB,
 				self.btnYUV,
 				self.btnGreyscale,
-				self.btnBitmapToBytes,
+				#self.btnBitmapToBytes,
 				self.btnJPEG],
 			TYPE_ENCODED: [
 				self.btnJPEGDecode

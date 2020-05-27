@@ -13,7 +13,7 @@ class ARI:
         self.make_ranges()
         interval = self.get_interval(in_string)
         final_string = self.range_to_bin_string(Decimal(interval[0]), Decimal(interval[1]))
-        stateOb.statistics = ["Initial String: "+str(stateOb.getValue()), "Encoded String: "+str(final_string), "Initial Size(Bytes): " + str(len(stateOb.getValue())*8), "Final Size(Bytes): " + str(len(final_string)/8)]
+        stateOb.statistics = ["Initial String: "+str(stateOb.getValue()), "Encoded String: "+str(final_string), "Initial Size(Bytes): " + str(len(stateOb.getValue())), "Final Size(Bytes): " + str(len(final_string)/8)]
         stateOb.setValue(final_string)
         stateOb.name = "Arithmetic Encoding"
         stateOb.freq_dict = self.freq_dict

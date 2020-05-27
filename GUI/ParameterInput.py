@@ -32,5 +32,8 @@ class ParameterInput(tk.Frame):
 
     def handleSetVariable(self, p, variable):
         def callback(*args):
-            self.parameters[p] = variable.get()
+            try:
+                self.parameters[p] = variable.get()
+            except tk.TclError:
+                pass
         return callback

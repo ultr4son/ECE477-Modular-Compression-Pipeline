@@ -21,7 +21,7 @@ class Huffman:
             for j in self.lookup_table[i]:
                 out_string.append(j)
         final_string = ''.join([str(elem) for elem in out_string]) 
-        stateOb.statistics = ["Initial String: "+str(stateOb.getValue()), "Encoded String: "+str(final_string), "Initial Size(Bytes): " + str(len(in_string)), "Final Size(Bytes): " + str(len(final_string)/8)]
+        stateOb.statistics = ["Initial String: "+str(stateOb.getValue()), "Encoded String: "+str(final_string), "Initial Size(Bytes): " + str(len(in_string)), "Final Size(Bytes): " + str(len(final_string) / 8)]
         stateOb.setValue(final_string)
         stateOb.name = "Huffman Encode"
         stateOb.freq_table = self.freq_dict

@@ -102,7 +102,7 @@ class TransformWidget(tk.Frame):
         self.outTypeWidget.grid(column = OUTPUT_TYPE_COLUMN, row = 0)
         bindForWidget(self.tag(), self.outTypeWidget)
 
-        self.nameWidget = tk.Label(self, text = self.name, width = 15, height = 3)
+        self.nameWidget = tk.Label(self, text = self.name, width = 18, height = 3)
         self.nameWidget.grid(column = NAME_COLUMN, row = 0)
 
         bindForWidget(self.tag(), self.nameWidget)
